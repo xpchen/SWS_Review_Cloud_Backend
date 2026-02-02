@@ -1,0 +1,145 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>19c46840-c751-47b5-91ce-bc6dac8870a9</ProjectGuid>
+    <ProjectHome>.</ProjectHome>
+    <StartupFile>测试审查.py</StartupFile>
+    <SearchPath>
+    </SearchPath>
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <Name>SWS_Review_Cloud_Backend_MVP</Name>
+    <RootNamespace>SWS_Review_Cloud_Backend_MVP</RootNamespace>
+    <InterpreterId>MSBuild|env|$(MSBuildProjectFullPath)</InterpreterId>
+    <IsWindowsApplication>False</IsWindowsApplication>
+    <LaunchProvider>Web launcher</LaunchProvider>
+    <PythonRunWebServerCommand>
+    </PythonRunWebServerCommand>
+    <PythonRunWebServerCommandArguments>
+    </PythonRunWebServerCommandArguments>
+    <PythonRunWebServerCommandEnvironment>
+    </PythonRunWebServerCommandEnvironment>
+    <PythonDebugWebServerCommand>uvicorn</PythonDebugWebServerCommand>
+    <PythonRunWebServerCommandType>
+    </PythonRunWebServerCommandType>
+    <PythonDebugWebServerCommandType>module</PythonDebugWebServerCommandType>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="app\" />
+    <Folder Include="app\ai\" />
+    <Folder Include="app\core\" />
+    <Folder Include="app\models\" />
+    <Folder Include="app\routers\" />
+    <Folder Include="app\rule_engine\" />
+    <Folder Include="app\services\" />
+    <Folder Include="app\storage\" />
+    <Folder Include="app\worker\" />
+    <Folder Include="Properties\" />
+    <Folder Include="static\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="app\ai\prompts.py" />
+    <Compile Include="app\ai\qwen_client.py" />
+    <Compile Include="app\ai\rag.py" />
+    <Compile Include="app\ai\__init__.py" />
+    <Compile Include="app\core\deps.py" />
+    <Compile Include="app\core\security.py" />
+    <Compile Include="app\core\__init__.py" />
+    <Compile Include="app\db.py" />
+    <Compile Include="app\main.py" />
+    <Compile Include="app\models\auth.py" />
+    <Compile Include="app\models\common.py" />
+    <Compile Include="app\models\documents.py" />
+    <Compile Include="app\models\projects.py" />
+    <Compile Include="app\models\review.py" />
+    <Compile Include="app\models\__init__.py" />
+    <Compile Include="app\routers\auth.py" />
+    <Compile Include="app\routers\documents.py" />
+    <Compile Include="app\routers\export_router.py" />
+    <Compile Include="app\routers\issues_router.py" />
+    <Compile Include="app\routers\kb.py" />
+    <Compile Include="app\routers\projects.py" />
+    <Compile Include="app\routers\review_runs.py" />
+    <Compile Include="app\routers\versions.py" />
+    <Compile Include="app\routers\__init__.py" />
+    <Compile Include="app\rule_engine\base.py" />
+    <Compile Include="app\rule_engine\business_logic_review.py" />
+    <Compile Include="app\rule_engine\consistency_review.py" />
+    <Compile Include="app\rule_engine\content_review.py" />
+    <Compile Include="app\rule_engine\format_review.py" />
+    <Compile Include="app\rule_engine\formula_calculation.py" />
+    <Compile Include="app\rule_engine\key_field_inconsistent.py" />
+    <Compile Include="app\rule_engine\missing_section.py" />
+    <Compile Include="app\rule_engine\sum_mismatch.py" />
+    <Compile Include="app\rule_engine\unit_inconsistent.py" />
+    <Compile Include="app\rule_engine\__init__.py" />
+    <Compile Include="app\services\auth_service.py" />
+    <Compile Include="app\services\block_service.py" />
+    <Compile Include="app\services\checkpoint_runner.py" />
+    <Compile Include="app\services\document_service.py" />
+    <Compile Include="app\services\export_service.py" />
+    <Compile Include="app\services\fact_service.py" />
+    <Compile Include="app\services\file_service.py" />
+    <Compile Include="app\services\issue_service.py" />
+    <Compile Include="app\services\kb_service.py" />
+    <Compile Include="app\services\project_service.py" />
+    <Compile Include="app\services\review_run_service.py" />
+    <Compile Include="app\services\upload_service.py" />
+    <Compile Include="app\services\version_service.py" />
+    <Compile Include="app\services\__init__.py" />
+    <Compile Include="app\settings.py" />
+    <Compile Include="app\storage\base.py" />
+    <Compile Include="app\storage\factory.py" />
+    <Compile Include="app\storage\local.py" />
+    <Compile Include="app\storage\minio_impl.py" />
+    <Compile Include="app\storage\__init__.py" />
+    <Compile Include="app\worker\ai_review_tasks.py" />
+    <Compile Include="app\worker\app.py" />
+    <Compile Include="app\worker\kb_tasks.py" />
+    <Compile Include="app\worker\pipeline.py" />
+    <Compile Include="app\worker\review_tasks.py" />
+    <Compile Include="app\worker\tasks.py" />
+    <Compile Include="app\worker\__init__.py" />
+    <Compile Include="check_routes.py" />
+    <Compile Include="检查Celery状态.py" />
+    <Compile Include="测试审查.py" />
+    <Compile Include="测试文档处理.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include=".env" />
+    <Content Include=".env.example" />
+    <Content Include="Properties\launchSettings.json" />
+    <Content Include="README.md" />
+    <Content Include="requirements.txt" />
+    <Content Include="static\demo.pdf" />
+  </ItemGroup>
+  <ItemGroup>
+    <Interpreter Include="env\">
+      <Id>env</Id>
+      <Version>3.13</Version>
+      <Description>env (Python 3.13 (64-bit))</Description>
+      <InterpreterPath>Scripts\python.exe</InterpreterPath>
+      <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
+      <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>
+      <Architecture>X64</Architecture>
+    </Interpreter>
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
+  <!-- Uncomment the CoreCompile target to enable the Build command in
+       Visual Studio and specify your pre- and post-build commands in
+       the BeforeBuild and AfterBuild targets below. -->
+  <!--<Target Name="CoreCompile" />-->
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+</Project>

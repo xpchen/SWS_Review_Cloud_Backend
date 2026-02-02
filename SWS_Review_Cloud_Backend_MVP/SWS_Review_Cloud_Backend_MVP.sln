@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.36105.23 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "SWS_Review_Cloud_Backend_MVP", "SWS_Review_Cloud_Backend_MVP.pyproj", "{19C46840-C751-47B5-91CE-BC6DAC8870A9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{19C46840-C751-47B5-91CE-BC6DAC8870A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19C46840-C751-47B5-91CE-BC6DAC8870A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C7AF2A0E-58B7-46B8-A174-5A8BF1CDA9F0}
+	EndGlobalSection
+EndGlobal

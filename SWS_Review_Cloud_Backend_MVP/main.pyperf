@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<ProfilingTarget xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <StandaloneTarget>
+    <PythonInterpreter>
+      <Id>Global|VisualStudio|arcgispro-py3</Id>
+    </PythonInterpreter>
+    <WorkingDirectory>D:\Workspace\SWS_Review_Cloud_Backend\SWS_Review_Cloud_Backend_MVP\app</WorkingDirectory>
+    <Script>D:\Workspace\SWS_Review_Cloud_Backend\SWS_Review_Cloud_Backend_MVP\app\main.py</Script>
+    <Arguments>app.main:app --reload --host 0.0.0.0 --port 8000</Arguments>
+  </StandaloneTarget>
+  <Reports>
+    <Report>
+      <Filename>C:\temp\main_20260201.vsp</Filename>
+    </Report>
+  </Reports>
+  <UseVTune>false</UseVTune>
+</ProfilingTarget>

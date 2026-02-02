@@ -1,0 +1,3498 @@
+{
+  "export_time": "2026-02-01T06:31:22.936561",
+  "total_count": 143,
+  "enabled_count": 82,
+  "disabled_count": 61,
+  "checkpoints": [
+    {
+      "id": 12,
+      "code": "CONSISTENCY_BASIC",
+      "name": "一致性审查-基础元信息",
+      "category": "CONSISTENCY",
+      "engine_type": "RULE",
+      "review_category": "CONSISTENCY",
+      "enabled": true,
+      "order_index": 30,
+      "executor": "consistency_review",
+      "only_checks": null,
+      "has_only_checks": false,
+      "rule_config_json": {
+        "executor": "consistency_review",
+        "tolerance": 0.01
+      }
+    },
+    {
+      "id": 13,
+      "code": "CONSISTENCY_SCALE",
+      "name": "一致性审查-规模数量",
+      "category": "CONSISTENCY",
+      "engine_type": "RULE",
+      "review_category": "CONSISTENCY",
+      "enabled": true,
+      "order_index": 31,
+      "executor": "consistency_review",
+      "only_checks": null,
+      "has_only_checks": false,
+      "rule_config_json": {
+        "executor": "consistency_review",
+        "tolerance": 0.01
+      }
+    },
+    {
+      "id": 14,
+      "code": "CONSISTENCY_EARTHWORK",
+      "name": "一致性审查-土石方",
+      "category": "CONSISTENCY",
+      "engine_type": "RULE",
+      "review_category": "CONSISTENCY",
+      "enabled": true,
+      "order_index": 32,
+      "executor": "consistency_review",
+      "only_checks": null,
+      "has_only_checks": false,
+      "rule_config_json": {
+        "executor": "consistency_review",
+        "tolerance": 0.01
+      }
+    },
+    {
+      "id": 15,
+      "code": "CALC_TABLE_SUM",
+      "name": "表内计算-合计检查",
+      "category": "CALCULATION",
+      "engine_type": "RULE",
+      "review_category": "CALCULATION",
+      "enabled": true,
+      "order_index": 40,
+      "executor": "sum_mismatch",
+      "only_checks": null,
+      "has_only_checks": false,
+      "rule_config_json": {
+        "executor": "sum_mismatch",
+        "rounding": 2,
+        "tolerance": 0.01
+      }
+    },
+    {
+      "id": 16,
+      "code": "CALC_TABLE_PERCENT",
+      "name": "表内计算-占比检查",
+      "category": "CALCULATION",
+      "engine_type": "RULE",
+      "review_category": "CALCULATION",
+      "enabled": true,
+      "order_index": 41,
+      "executor": "sum_mismatch",
+      "only_checks": null,
+      "has_only_checks": false,
+      "rule_config_json": {
+        "executor": "sum_mismatch",
+        "tolerance": 0.01
+      }
+    },
+    {
+      "id": 19,
+      "code": "FORMULA_SIX_INDICATORS",
+      "name": "公式计算-六项指标",
+      "category": "CALCULATION",
+      "engine_type": "RULE",
+      "review_category": "CALCULATION",
+      "enabled": true,
+      "order_index": 42,
+      "executor": "formula_calculation",
+      "only_checks": null,
+      "has_only_checks": false,
+      "rule_config_json": {
+        "executor": "formula_calculation",
+        "tolerance": 0.01,
+        "formula_type": "six_indicators"
+      }
+    },
+    {
+      "id": 20,
+      "code": "FORMULA_BALANCE",
+      "name": "公式计算-平衡公式",
+      "category": "CALCULATION",
+      "engine_type": "RULE",
+      "review_category": "CALCULATION",
+      "enabled": true,
+      "order_index": 43,
+      "executor": "formula_calculation",
+      "only_checks": null,
+      "has_only_checks": false,
+      "rule_config_json": {
+        "executor": "formula_calculation",
+        "tolerance": 0.01,
+        "formula_type": "balance"
+      }
+    },
+    {
+      "id": 21,
+      "code": "FORMULA_PREDICTION",
+      "name": "公式计算-预测计算",
+      "category": "CALCULATION",
+      "engine_type": "RULE",
+      "review_category": "CALCULATION",
+      "enabled": true,
+      "order_index": 44,
+      "executor": "formula_calculation",
+      "only_checks": null,
+      "has_only_checks": false,
+      "rule_config_json": {
+        "executor": "formula_calculation",
+        "tolerance": 0.01,
+        "formula_type": "prediction"
+      }
+    },
+    {
+      "id": 17,
+      "code": "LOGIC_TRIGGER",
+      "name": "业务逻辑-触发必备论证",
+      "category": "LOGIC",
+      "engine_type": "RULE",
+      "review_category": "LOGIC",
+      "enabled": true,
+      "order_index": 50,
+      "executor": "business_logic_review",
+      "only_checks": null,
+      "has_only_checks": false,
+      "rule_config_json": {
+        "executor": "business_logic_review"
+      }
+    },
+    {
+      "id": 18,
+      "code": "LOGIC_PROHIBITION",
+      "name": "业务逻辑-禁止性条款",
+      "category": "LOGIC",
+      "engine_type": "RULE",
+      "review_category": "LOGIC",
+      "enabled": true,
+      "order_index": 51,
+      "executor": "business_logic_review",
+      "only_checks": null,
+      "has_only_checks": false,
+      "rule_config_json": {
+        "executor": "business_logic_review"
+      }
+    },
+    {
+      "id": 25,
+      "code": "UNIT_INCONSISTENT",
+      "name": "单位混用检查",
+      "category": "LEGACY",
+      "engine_type": "RULE",
+      "review_category": "LEGACY",
+      "enabled": true,
+      "order_index": 60,
+      "executor": "unit_inconsistent",
+      "only_checks": null,
+      "has_only_checks": false,
+      "rule_config_json": {
+        "executor": "unit_inconsistent"
+      }
+    },
+    {
+      "id": 26,
+      "code": "MISSING_SECTION",
+      "name": "缺章节检查",
+      "category": "LEGACY",
+      "engine_type": "RULE",
+      "review_category": "LEGACY",
+      "enabled": true,
+      "order_index": 61,
+      "executor": "missing_section",
+      "only_checks": null,
+      "has_only_checks": false,
+      "rule_config_json": {
+        "executor": "missing_section"
+      }
+    },
+    {
+      "id": 27,
+      "code": "KEY_FIELD_INCONSISTENT",
+      "name": "关键字段不一致",
+      "category": "LEGACY",
+      "engine_type": "RULE",
+      "review_category": "LEGACY",
+      "enabled": true,
+      "order_index": 62,
+      "executor": "key_field_inconsistent",
+      "only_checks": null,
+      "has_only_checks": false,
+      "rule_config_json": {
+        "executor": "key_field_inconsistent"
+      }
+    },
+    {
+      "id": 22,
+      "code": "AI_COMPLIANCE",
+      "name": "AI审查-合规性审查",
+      "category": "AI",
+      "engine_type": "AI",
+      "review_category": "AI",
+      "enabled": true,
+      "order_index": 70,
+      "executor": "ai_review",
+      "only_checks": null,
+      "has_only_checks": false,
+      "rule_config_json": {
+        "top_k": 5,
+        "executor": "ai_review",
+        "kb_keywords": "水土保持 规范 标准",
+        "max_context_length": 8000
+      }
+    },
+    {
+      "id": 23,
+      "code": "AI_ARGUMENT_QUALITY",
+      "name": "AI审查-论证质量",
+      "category": "AI",
+      "engine_type": "AI",
+      "review_category": "AI",
+      "enabled": true,
+      "order_index": 71,
+      "executor": "ai_review",
+      "only_checks": null,
+      "has_only_checks": false,
+      "rule_config_json": {
+        "top_k": 3,
+        "executor": "ai_review",
+        "kb_keywords": "论证 依据 合理性",
+        "max_context_length": 6000
+      }
+    },
+    {
+      "id": 24,
+      "code": "AI_MEASURES_COMPLETENESS",
+      "name": "AI审查-措施完整性",
+      "category": "AI",
+      "engine_type": "AI",
+      "review_category": "AI",
+      "enabled": true,
+      "order_index": 72,
+      "executor": "ai_review",
+      "only_checks": null,
+      "has_only_checks": false,
+      "rule_config_json": {
+        "top_k": 3,
+        "executor": "ai_review",
+        "kb_keywords": "防治措施 工程措施 植物措施",
+        "max_context_length": 6000
+      }
+    },
+    {
+      "id": 28,
+      "code": "FMT_R_001",
+      "name": "封面要素齐全（项目名称/建设单位/编制单位/日期）",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 1000,
+      "executor": "format_review",
+      "only_checks": [
+        "cover_required_elements"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "format_review",
+        "only_checks": [
+          "cover_required_elements"
+        ],
+        "review_category": "FORMAT",
+        "required_elements": [
+          "项目名称",
+          "建设单位",
+          "编制单位",
+          "版本日期"
+        ]
+      }
+    },
+    {
+      "id": 29,
+      "code": "FMT_R_002",
+      "name": "目录存在",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 1001,
+      "executor": "format_review",
+      "only_checks": [
+        "toc_present"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "format_review",
+        "only_checks": [
+          "toc_present"
+        ],
+        "review_category": "FORMAT"
+      }
+    },
+    {
+      "id": 30,
+      "code": "FMT_R_003",
+      "name": "章节编号连续性与不跳级",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 1002,
+      "executor": "format_review",
+      "only_checks": [
+        "heading_numbering"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "format_review",
+        "only_checks": [
+          "heading_numbering"
+        ],
+        "review_category": "FORMAT"
+      }
+    },
+    {
+      "id": 31,
+      "code": "FMT_R_004",
+      "name": "图编号连续且不重复",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 1003,
+      "executor": "format_review",
+      "only_checks": [
+        "figure_numbering"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "format_review",
+        "only_checks": [
+          "figure_numbering"
+        ],
+        "review_category": "FORMAT"
+      }
+    },
+    {
+      "id": 32,
+      "code": "FMT_R_005",
+      "name": "表编号连续且不重复",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 1004,
+      "executor": "format_review",
+      "only_checks": [
+        "table_numbering"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "format_review",
+        "only_checks": [
+          "table_numbering"
+        ],
+        "review_category": "FORMAT"
+      }
+    },
+    {
+      "id": 33,
+      "code": "FMT_R_006",
+      "name": "表题（caption）缺失检查",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 1005,
+      "executor": "format_review",
+      "only_checks": [
+        "table_caption_present"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "format_review",
+        "only_checks": [
+          "table_caption_present"
+        ],
+        "review_category": "FORMAT"
+      }
+    },
+    {
+      "id": 34,
+      "code": "FMT_R_007",
+      "name": "图题（caption）缺失检查",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 1006,
+      "executor": "format_review",
+      "only_checks": [
+        "figure_caption_present"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "format_review",
+        "only_checks": [
+          "figure_caption_present"
+        ],
+        "review_category": "FORMAT"
+      }
+    },
+    {
+      "id": 35,
+      "code": "FMT_R_008",
+      "name": "表格必须被正文引用",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 1007,
+      "executor": "format_review",
+      "only_checks": [
+        "table_referenced"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "format_review",
+        "only_checks": [
+          "table_referenced"
+        ],
+        "review_category": "FORMAT"
+      }
+    },
+    {
+      "id": 36,
+      "code": "FMT_R_009",
+      "name": "图件必须被正文引用",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 1008,
+      "executor": "format_review",
+      "only_checks": [
+        "figure_referenced"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "format_review",
+        "only_checks": [
+          "figure_referenced"
+        ],
+        "review_category": "FORMAT"
+      }
+    },
+    {
+      "id": 37,
+      "code": "FMT_R_010",
+      "name": "单位/符号写法统一（hm²、m³、万元、%）",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 1009,
+      "executor": "format_review",
+      "only_checks": [
+        "unit_symbol_consistency"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "format_review",
+        "unit_alias": {
+          "m3": "m³",
+          "hm2": "hm²",
+          "元": "元",
+          "万元": "万元",
+          "公顷": "hm²",
+          "立方米": "m³"
+        },
+        "only_checks": [
+          "unit_symbol_consistency"
+        ],
+        "review_category": "FORMAT"
+      }
+    },
+    {
+      "id": 38,
+      "code": "FMT_R_011",
+      "name": "全角/半角与标点规范（提示级）",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 1010,
+      "executor": "format_review",
+      "only_checks": [
+        "typography_normalization"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "format_review",
+        "severity": "S4",
+        "only_checks": [
+          "typography_normalization"
+        ],
+        "review_category": "FORMAT"
+      }
+    },
+    {
+      "id": 39,
+      "code": "FMT_R_012",
+      "name": "表格单位列/表头单位缺失（提示级）",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 1011,
+      "executor": "format_review",
+      "only_checks": [
+        "table_unit_column_present"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "format_review",
+        "severity": "S3",
+        "only_checks": [
+          "table_unit_column_present"
+        ],
+        "review_category": "FORMAT"
+      }
+    },
+    {
+      "id": 44,
+      "code": "CNT_R_001",
+      "name": "必备章节齐全（大纲清单）",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 2000,
+      "executor": "content_review",
+      "only_checks": [
+        "required_sections"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "content_review",
+        "only_checks": [
+          "required_sections"
+        ],
+        "review_category": "CONTENT",
+        "required_sections": {
+          "投资": [
+            "投资",
+            "概算",
+            "估算"
+          ],
+          "监测": [
+            "监测",
+            "水土保持监测"
+          ],
+          "管理": [
+            "管理",
+            "组织管理",
+            "实施管理"
+          ],
+          "综合说明": [
+            "综合说明",
+            "概述",
+            "总则"
+          ],
+          "防治措施": [
+            "防治措施",
+            "水土保持措施"
+          ],
+          "项目概况": [
+            "项目概况",
+            "工程概况"
+          ],
+          "项目区概况": [
+            "项目区概况",
+            "区域概况"
+          ],
+          "水土流失预测": [
+            "水土流失预测",
+            "预测"
+          ]
+        }
+      }
+    },
+    {
+      "id": 45,
+      "code": "CNT_R_002",
+      "name": "项目概况要素齐备（地点/规模/工期/组成）",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 2001,
+      "executor": "content_review",
+      "only_checks": [
+        "overview_required_elements"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "content_review",
+        "only_checks": [
+          "overview_required_elements"
+        ],
+        "review_category": "CONTENT",
+        "required_elements": [
+          "建设地点",
+          "建设规模",
+          "建设内容",
+          "工期"
+        ]
+      }
+    },
+    {
+      "id": 46,
+      "code": "CNT_R_003",
+      "name": "防治责任范围描述与分区齐全",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 2002,
+      "executor": "content_review",
+      "only_checks": [
+        "responsibility_area_elements"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "content_review",
+        "only_checks": [
+          "responsibility_area_elements"
+        ],
+        "review_category": "CONTENT",
+        "required_elements": [
+          "防治责任范围",
+          "防治分区",
+          "面积"
+        ]
+      }
+    },
+    {
+      "id": 47,
+      "code": "CNT_R_004",
+      "name": "扰动/损毁类型与面积表述齐全",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 2003,
+      "executor": "content_review",
+      "only_checks": [
+        "disturbance_elements"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "content_review",
+        "only_checks": [
+          "disturbance_elements"
+        ],
+        "review_category": "CONTENT",
+        "required_elements": [
+          "扰动",
+          "占地",
+          "损毁",
+          "面积"
+        ]
+      }
+    },
+    {
+      "id": 48,
+      "code": "CNT_R_005",
+      "name": "水土流失预测章节存在且包含结果（表/结论句）",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 2004,
+      "executor": "content_review",
+      "only_checks": [
+        "prediction_present"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "content_review",
+        "only_checks": [
+          "prediction_present"
+        ],
+        "review_category": "CONTENT",
+        "required_phrases": [
+          "预测",
+          "侵蚀量",
+          "水土流失量"
+        ]
+      }
+    },
+    {
+      "id": 49,
+      "code": "CNT_R_006",
+      "name": "防治措施体系齐全（工程/植物/临时）",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 2005,
+      "executor": "content_review",
+      "only_checks": [
+        "measures_system_present"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "content_review",
+        "only_checks": [
+          "measures_system_present"
+        ],
+        "review_category": "CONTENT",
+        "required_sections": {
+          "临时措施": [
+            "临时措施",
+            "临时防护",
+            "覆盖",
+            "临时排水"
+          ],
+          "工程措施": [
+            "工程措施",
+            "拦挡",
+            "排水",
+            "护坡",
+            "沉沙"
+          ],
+          "植物措施": [
+            "植物措施",
+            "绿化",
+            "复绿",
+            "植被恢复"
+          ]
+        }
+      }
+    },
+    {
+      "id": 50,
+      "code": "CNT_R_007",
+      "name": "监测方案齐全（频次/方法/布点/责任）",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 2006,
+      "executor": "content_review",
+      "only_checks": [
+        "monitoring_present"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "content_review",
+        "only_checks": [
+          "monitoring_present"
+        ],
+        "review_category": "CONTENT",
+        "required_phrases": [
+          "监测",
+          "频次",
+          "布点",
+          "方法"
+        ]
+      }
+    },
+    {
+      "id": 51,
+      "code": "CNT_R_008",
+      "name": "投资估算/概算章节齐全（工程量/单价/合计）",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 2007,
+      "executor": "content_review",
+      "only_checks": [
+        "investment_present"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "content_review",
+        "only_checks": [
+          "investment_present"
+        ],
+        "review_category": "CONTENT",
+        "required_phrases": [
+          "工程量",
+          "单价",
+          "合计",
+          "万元"
+        ]
+      }
+    },
+    {
+      "id": 52,
+      "code": "CNT_R_009",
+      "name": "实施进度与措施安排齐全",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 2008,
+      "executor": "content_review",
+      "only_checks": [
+        "schedule_present"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "content_review",
+        "only_checks": [
+          "schedule_present"
+        ],
+        "review_category": "CONTENT",
+        "required_phrases": [
+          "进度",
+          "安排",
+          "施工期",
+          "恢复期"
+        ]
+      }
+    },
+    {
+      "id": 53,
+      "code": "CNT_R_010",
+      "name": "组织管理与责任分工齐全",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 2009,
+      "executor": "content_review",
+      "only_checks": [
+        "management_present"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "content_review",
+        "only_checks": [
+          "management_present"
+        ],
+        "review_category": "CONTENT",
+        "required_phrases": [
+          "组织",
+          "责任",
+          "管理",
+          "落实"
+        ]
+      }
+    },
+    {
+      "id": 54,
+      "code": "CNT_R_011",
+      "name": "触发：有弃渣/弃方/外运→必须有弃渣论证与防护",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 2010,
+      "executor": "content_review",
+      "only_checks": [
+        "trigger_requirements"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "content_review",
+        "only_checks": [
+          "trigger_requirements"
+        ],
+        "review_category": "CONTENT",
+        "trigger_requirements": {
+          "弃渣": {
+            "keywords": [
+              "弃渣",
+              "弃方",
+              "弃土",
+              "外运"
+            ],
+            "required_measures": [
+              "拦挡",
+              "覆盖",
+              "排水",
+              "沉沙"
+            ],
+            "required_sections": [
+              "弃渣场",
+              "弃渣论证",
+              "弃方处理"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 55,
+      "code": "CNT_R_012",
+      "name": "触发：有临时用地→必须有临时防护与恢复",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 2011,
+      "executor": "content_review",
+      "only_checks": [
+        "trigger_requirements"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "content_review",
+        "only_checks": [
+          "trigger_requirements"
+        ],
+        "review_category": "CONTENT",
+        "trigger_requirements": {
+          "临时用地": {
+            "keywords": [
+              "临时用地",
+              "临时占地"
+            ],
+            "required_measures": [
+              "覆盖",
+              "排水",
+              "围挡"
+            ],
+            "required_sections": [
+              "临时防护",
+              "临时用地恢复"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 56,
+      "code": "CNT_R_013",
+      "name": "触发：有消纳场/专门存放地→必须有选址禁限区论证",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 2012,
+      "executor": "content_review",
+      "only_checks": [
+        "trigger_requirements"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "content_review",
+        "only_checks": [
+          "trigger_requirements"
+        ],
+        "review_category": "CONTENT",
+        "trigger_requirements": {
+          "消纳场": {
+            "keywords": [
+              "消纳场",
+              "专门存放地"
+            ],
+            "required_phrases": [
+              "禁限区",
+              "符合性",
+              "论证"
+            ],
+            "required_sections": [
+              "选址论证",
+              "禁限区符合性论证"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 57,
+      "code": "CNT_R_014",
+      "name": "触发：临水/河道/水库施工→必须有防治措施（沉沙/截排水）",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 2013,
+      "executor": "content_review",
+      "only_checks": [
+        "trigger_requirements"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "content_review",
+        "only_checks": [
+          "trigger_requirements"
+        ],
+        "review_category": "CONTENT",
+        "trigger_requirements": {
+          "临水施工": {
+            "keywords": [
+              "河道",
+              "水库",
+              "溪流",
+              "排水口",
+              "临水"
+            ],
+            "required_measures": [
+              "沉沙",
+              "截排水",
+              "防护"
+            ],
+            "required_sections": [
+              "防治措施",
+              "水环境"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 62,
+      "code": "CNS_R_001",
+      "name": "项目名称多处表述一致",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 3000,
+      "executor": "consistency_review",
+      "only_checks": [
+        "fact_consistency"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "consistency_review",
+        "tolerance": 0.0,
+        "only_checks": [
+          "fact_consistency"
+        ],
+        "review_category": "CONSISTENCY",
+        "fact_key_allowlist": [
+          "项目名称"
+        ]
+      }
+    },
+    {
+      "id": 63,
+      "code": "CNS_R_002",
+      "name": "建设单位多处表述一致",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 3001,
+      "executor": "consistency_review",
+      "only_checks": [
+        "fact_consistency"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "consistency_review",
+        "tolerance": 0.0,
+        "only_checks": [
+          "fact_consistency"
+        ],
+        "review_category": "CONSISTENCY",
+        "fact_key_allowlist": [
+          "建设单位"
+        ]
+      }
+    },
+    {
+      "id": 64,
+      "code": "CNS_R_003",
+      "name": "建设地点多处表述一致",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 3002,
+      "executor": "consistency_review",
+      "only_checks": [
+        "fact_consistency"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "consistency_review",
+        "tolerance": 0.0,
+        "only_checks": [
+          "fact_consistency"
+        ],
+        "review_category": "CONSISTENCY",
+        "fact_key_allowlist": [
+          "建设地点"
+        ]
+      }
+    },
+    {
+      "id": 65,
+      "code": "CNS_R_004",
+      "name": "项目代码/编号一致",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 3003,
+      "executor": "consistency_review",
+      "only_checks": [
+        "fact_consistency"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "consistency_review",
+        "tolerance": 0.0,
+        "only_checks": [
+          "fact_consistency"
+        ],
+        "review_category": "CONSISTENCY",
+        "fact_key_allowlist": [
+          "项目代码"
+        ]
+      }
+    },
+    {
+      "id": 66,
+      "code": "CNS_R_010",
+      "name": "总占地面积一致（跨章节/表格）",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 3010,
+      "executor": "consistency_review",
+      "only_checks": [
+        "fact_consistency"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "consistency_review",
+        "tolerance": 0.01,
+        "only_checks": [
+          "fact_consistency"
+        ],
+        "review_category": "CONSISTENCY",
+        "fact_key_allowlist": [
+          "总占地面积"
+        ]
+      }
+    },
+    {
+      "id": 67,
+      "code": "CNS_R_011",
+      "name": "永久占地面积一致",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 3011,
+      "executor": "consistency_review",
+      "only_checks": [
+        "fact_consistency"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "consistency_review",
+        "tolerance": 0.01,
+        "only_checks": [
+          "fact_consistency"
+        ],
+        "review_category": "CONSISTENCY",
+        "fact_key_allowlist": [
+          "永久占地"
+        ]
+      }
+    },
+    {
+      "id": 68,
+      "code": "CNS_R_012",
+      "name": "临时占地面积一致",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 3012,
+      "executor": "consistency_review",
+      "only_checks": [
+        "fact_consistency"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "consistency_review",
+        "tolerance": 0.01,
+        "only_checks": [
+          "fact_consistency"
+        ],
+        "review_category": "CONSISTENCY",
+        "fact_key_allowlist": [
+          "临时占地"
+        ]
+      }
+    },
+    {
+      "id": 69,
+      "code": "CNS_R_013",
+      "name": "扰动面积一致",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 3013,
+      "executor": "consistency_review",
+      "only_checks": [
+        "fact_consistency"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "consistency_review",
+        "tolerance": 0.01,
+        "only_checks": [
+          "fact_consistency"
+        ],
+        "review_category": "CONSISTENCY",
+        "fact_key_allowlist": [
+          "扰动面积"
+        ]
+      }
+    },
+    {
+      "id": 70,
+      "code": "CNS_R_014",
+      "name": "防治责任范围面积一致",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 3014,
+      "executor": "consistency_review",
+      "only_checks": [
+        "fact_consistency"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "consistency_review",
+        "tolerance": 0.01,
+        "only_checks": [
+          "fact_consistency"
+        ],
+        "review_category": "CONSISTENCY",
+        "fact_key_allowlist": [
+          "防治责任范围面积"
+        ]
+      }
+    },
+    {
+      "id": 71,
+      "code": "CNS_R_020",
+      "name": "土石方挖/填/借/弃/外运量一致",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 3020,
+      "executor": "consistency_review",
+      "only_checks": [
+        "fact_consistency"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "consistency_review",
+        "tolerance": 0.1,
+        "only_checks": [
+          "fact_consistency"
+        ],
+        "review_category": "CONSISTENCY",
+        "fact_key_allowlist": [
+          "挖方",
+          "填方",
+          "借方",
+          "弃方",
+          "外运量"
+        ]
+      }
+    },
+    {
+      "id": 72,
+      "code": "CNS_R_030",
+      "name": "工期起止与设计水平年一致",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 3030,
+      "executor": "consistency_review",
+      "only_checks": [
+        "fact_consistency"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "consistency_review",
+        "tolerance": 0.0,
+        "only_checks": [
+          "fact_consistency"
+        ],
+        "review_category": "CONSISTENCY",
+        "fact_key_allowlist": [
+          "施工期起",
+          "施工期止",
+          "设计水平年"
+        ]
+      }
+    },
+    {
+      "id": 73,
+      "code": "CNS_R_040",
+      "name": "静态投资/水保投资一致",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 3040,
+      "executor": "consistency_review",
+      "only_checks": [
+        "fact_consistency"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "consistency_review",
+        "tolerance": 1.0,
+        "only_checks": [
+          "fact_consistency"
+        ],
+        "review_category": "CONSISTENCY",
+        "fact_key_allowlist": [
+          "静态投资",
+          "水土保持投资"
+        ]
+      }
+    },
+    {
+      "id": 74,
+      "code": "CNS_R_050",
+      "name": "同一表同列单位混用（亩/公顷/m²等）",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 3050,
+      "executor": "unit_inconsistent",
+      "only_checks": [
+        "table_unit_inconsistent"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "unit_inconsistent",
+        "only_checks": [
+          "table_unit_inconsistent"
+        ],
+        "review_category": "CONSISTENCY"
+      }
+    },
+    {
+      "id": 80,
+      "code": "TBL_R_001",
+      "name": "表内行合计核算（合计/小计行）",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 4000,
+      "executor": "sum_mismatch",
+      "only_checks": [
+        "row_sums"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "sum_mismatch",
+        "rounding": 2,
+        "tolerance": 0.01,
+        "only_checks": [
+          "row_sums"
+        ],
+        "review_category": "TABLE_CALC"
+      }
+    },
+    {
+      "id": 81,
+      "code": "TBL_R_002",
+      "name": "表内列合计核算（合计/小计列）",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 4001,
+      "executor": "sum_mismatch",
+      "only_checks": [
+        "col_sums"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "sum_mismatch",
+        "rounding": 2,
+        "tolerance": 0.01,
+        "only_checks": [
+          "col_sums"
+        ],
+        "review_category": "TABLE_CALC"
+      }
+    },
+    {
+      "id": 82,
+      "code": "TBL_R_003",
+      "name": "表内占比/百分比核算（分项/合计）",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 4002,
+      "executor": "sum_mismatch",
+      "only_checks": [
+        "percentages"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "sum_mismatch",
+        "tolerance": 0.02,
+        "only_checks": [
+          "percentages"
+        ],
+        "review_category": "TABLE_CALC"
+      }
+    },
+    {
+      "id": 83,
+      "code": "TBL_R_004",
+      "name": "表内“合计=分项之和”容差较严（投资类）",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 4003,
+      "executor": "sum_mismatch",
+      "only_checks": [
+        "row_sums",
+        "col_sums"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "sum_mismatch",
+        "rounding": 2,
+        "tolerance": 0.001,
+        "only_checks": [
+          "row_sums",
+          "col_sums"
+        ],
+        "review_category": "TABLE_CALC",
+        "table_title_keywords": [
+          "投资",
+          "概算",
+          "估算",
+          "费用"
+        ]
+      }
+    },
+    {
+      "id": 84,
+      "code": "TBL_R_005",
+      "name": "表内“合计=分项之和”容差较严（面积类）",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 4004,
+      "executor": "sum_mismatch",
+      "only_checks": [
+        "row_sums",
+        "col_sums"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "sum_mismatch",
+        "rounding": 2,
+        "tolerance": 0.001,
+        "only_checks": [
+          "row_sums",
+          "col_sums"
+        ],
+        "review_category": "TABLE_CALC",
+        "table_title_keywords": [
+          "面积",
+          "占地",
+          "扰动",
+          "责任范围"
+        ]
+      }
+    },
+    {
+      "id": 85,
+      "code": "TBL_R_006",
+      "name": "表内“合计=分项之和”容差较严（土石方类）",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 4005,
+      "executor": "sum_mismatch",
+      "only_checks": [
+        "row_sums",
+        "col_sums"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "sum_mismatch",
+        "rounding": 1,
+        "tolerance": 0.01,
+        "only_checks": [
+          "row_sums",
+          "col_sums"
+        ],
+        "review_category": "TABLE_CALC",
+        "table_title_keywords": [
+          "挖方",
+          "填方",
+          "弃方",
+          "土石方"
+        ]
+      }
+    },
+    {
+      "id": 86,
+      "code": "TBL_R_007",
+      "name": "表内数值缺失（合计行/列存在但数值为空）",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 4006,
+      "executor": "sum_mismatch",
+      "only_checks": [
+        "missing_numbers_in_sum_rows_cols"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "sum_mismatch",
+        "severity": "S2",
+        "only_checks": [
+          "missing_numbers_in_sum_rows_cols"
+        ],
+        "review_category": "TABLE_CALC"
+      }
+    },
+    {
+      "id": 88,
+      "code": "TBL_R_009",
+      "name": "表内单位换算后再核算（hm²/亩/m²）",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 4008,
+      "executor": "sum_mismatch",
+      "only_checks": [
+        "unit_normalize_then_sum"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "sum_mismatch",
+        "tolerance": 0.01,
+        "only_checks": [
+          "unit_normalize_then_sum"
+        ],
+        "review_category": "TABLE_CALC"
+      }
+    },
+    {
+      "id": 89,
+      "code": "TBL_R_010",
+      "name": "表内百分比合计应为100%（允许容差）",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 4009,
+      "executor": "sum_mismatch",
+      "only_checks": [
+        "percent_total_100"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "sum_mismatch",
+        "tolerance": 0.5,
+        "only_checks": [
+          "percent_total_100"
+        ],
+        "review_category": "TABLE_CALC"
+      }
+    },
+    {
+      "id": 96,
+      "code": "FOR_R_101",
+      "name": "六项指标复算：治理度",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 5000,
+      "executor": "formula_calculation",
+      "only_checks": [
+        "formula"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "formula_calculation",
+        "tolerance": 0.01,
+        "only_checks": [
+          "formula"
+        ],
+        "only_formulas": "RULE",
+        "only_indicators": [
+          "治理度"
+        ],
+        "review_category": "FORMULA_CALC"
+      }
+    },
+    {
+      "id": 97,
+      "code": "FOR_R_102",
+      "name": "六项指标复算：控制比",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 5001,
+      "executor": "formula_calculation",
+      "only_checks": [
+        "formula"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "formula_calculation",
+        "tolerance": 0.01,
+        "only_checks": [
+          "formula"
+        ],
+        "only_formulas": "RULE",
+        "only_indicators": [
+          "控制比"
+        ],
+        "review_category": "FORMULA_CALC"
+      }
+    },
+    {
+      "id": 98,
+      "code": "FOR_R_103",
+      "name": "六项指标复算：渣土防护率",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 5002,
+      "executor": "formula_calculation",
+      "only_checks": [
+        "formula"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "formula_calculation",
+        "tolerance": 0.01,
+        "only_checks": [
+          "formula"
+        ],
+        "only_formulas": "RULE",
+        "only_indicators": [
+          "渣土防护率"
+        ],
+        "review_category": "FORMULA_CALC"
+      }
+    },
+    {
+      "id": 99,
+      "code": "FOR_R_104",
+      "name": "六项指标复算：表土保护率",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 5003,
+      "executor": "formula_calculation",
+      "only_checks": [
+        "formula"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "formula_calculation",
+        "tolerance": 0.01,
+        "only_checks": [
+          "formula"
+        ],
+        "only_formulas": "RULE",
+        "only_indicators": [
+          "表土保护率"
+        ],
+        "review_category": "FORMULA_CALC"
+      }
+    },
+    {
+      "id": 100,
+      "code": "FOR_R_105",
+      "name": "六项指标复算：恢复率",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 5004,
+      "executor": "formula_calculation",
+      "only_checks": [
+        "formula"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "formula_calculation",
+        "tolerance": 0.01,
+        "only_checks": [
+          "formula"
+        ],
+        "only_formulas": "RULE",
+        "only_indicators": [
+          "恢复率"
+        ],
+        "review_category": "FORMULA_CALC"
+      }
+    },
+    {
+      "id": 101,
+      "code": "FOR_R_106",
+      "name": "六项指标复算：覆盖率",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 5005,
+      "executor": "formula_calculation",
+      "only_checks": [
+        "formula"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "formula_calculation",
+        "tolerance": 0.01,
+        "only_checks": [
+          "formula"
+        ],
+        "only_formulas": "RULE",
+        "only_indicators": [
+          "覆盖率"
+        ],
+        "review_category": "FORMULA_CALC"
+      }
+    },
+    {
+      "id": 102,
+      "code": "FOR_R_201",
+      "name": "土石方平衡复算（挖方=填方+弃方+外运）",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 5010,
+      "executor": "formula_calculation",
+      "only_checks": [
+        "balance"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "formula_calculation",
+        "tolerance": 0.01,
+        "only_checks": [
+          "balance"
+        ],
+        "only_balance": [
+          "土石方平衡"
+        ],
+        "review_category": "FORMULA_CALC"
+      }
+    },
+    {
+      "id": 103,
+      "code": "FOR_R_301",
+      "name": "预测计算复算：侵蚀量=分区面积×时段×侵蚀模数",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 5020,
+      "executor": "formula_calculation",
+      "only_checks": [
+        "prediction"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "formula_calculation",
+        "tolerance": 0.02,
+        "only_checks": [
+          "prediction"
+        ],
+        "only_prediction": [
+          "侵蚀量"
+        ],
+        "review_category": "FORMULA_CALC"
+      }
+    },
+    {
+      "id": 112,
+      "code": "BIZ_R_001",
+      "name": "禁止性条款：消纳场不得位于禁限区（生态红线/水源/核心区）",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 6000,
+      "executor": "business_logic_review",
+      "only_checks": [
+        "prohibition_rules"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "business_logic_review",
+        "only_checks": [
+          "prohibition_rules"
+        ],
+        "review_category": "BIZ_LOGIC",
+        "prohibition_rules": {
+          "消纳场禁限区": {
+            "message": "消纳场不得设置在禁限区内",
+            "trigger_keywords": [
+              "消纳场",
+              "专门存放地"
+            ],
+            "prohibited_keywords": [
+              "水源保护区",
+              "生态红线",
+              "自然保护区核心区"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 113,
+      "code": "BIZ_R_002",
+      "name": "禁止性条款：弃渣场/弃土场不得位于禁限区",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 6001,
+      "executor": "business_logic_review",
+      "only_checks": [
+        "prohibition_rules"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "business_logic_review",
+        "only_checks": [
+          "prohibition_rules"
+        ],
+        "review_category": "BIZ_LOGIC",
+        "prohibition_rules": {
+          "弃渣场禁限区": {
+            "message": "弃渣场不得设置在禁限区内",
+            "trigger_keywords": [
+              "弃渣场",
+              "弃土场",
+              "弃方场"
+            ],
+            "prohibited_keywords": [
+              "水源保护区",
+              "生态红线",
+              "自然保护区核心区"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 118,
+      "code": "BIZ_R_007",
+      "name": "触发：弃渣/外运→必须明确去向与运输组织（文本）",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 6006,
+      "executor": "content_review",
+      "only_checks": [
+        "required_elements"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "content_review",
+        "only_checks": [
+          "required_elements"
+        ],
+        "review_category": "BIZ_LOGIC",
+        "required_phrases": [
+          "去向",
+          "运输",
+          "路线",
+          "消纳"
+        ],
+        "trigger_keywords": [
+          "弃渣",
+          "外运"
+        ]
+      }
+    },
+    {
+      "id": 121,
+      "code": "BIZ_R_010",
+      "name": "制度合规：方案管理要求（报批/变更/验收）要素齐全",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 6009,
+      "executor": "content_review",
+      "only_checks": [
+        "management_present"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "content_review",
+        "only_checks": [
+          "management_present"
+        ],
+        "review_category": "BIZ_LOGIC",
+        "required_phrases": [
+          "报批",
+          "变更",
+          "验收",
+          "监测",
+          "档案"
+        ]
+      }
+    },
+    {
+      "id": 132,
+      "code": "OTH_R_005",
+      "name": "引用标准/规范列表存在且包含关键标准编号",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 7004,
+      "executor": "content_review",
+      "only_checks": [
+        "required_elements"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "content_review",
+        "only_checks": [
+          "required_elements"
+        ],
+        "review_category": "OTHER",
+        "required_phrases": [
+          "GB 50433",
+          "GB/T 21010",
+          "GB 51018",
+          "水保监",
+          "水利部令",
+          "广东省水土保持条例"
+        ]
+      }
+    },
+    {
+      "id": 133,
+      "code": "OTH_R_006",
+      "name": "附件清单存在（附表/附图/附件）",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 7005,
+      "executor": "content_review",
+      "only_checks": [
+        "required_elements"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "content_review",
+        "only_checks": [
+          "required_elements"
+        ],
+        "review_category": "OTHER",
+        "required_phrases": [
+          "附件",
+          "附表",
+          "附图"
+        ]
+      }
+    },
+    {
+      "id": 134,
+      "code": "OTH_R_007",
+      "name": "结论与建议章节存在（用于审查结论）",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": true,
+      "order_index": 7006,
+      "executor": "missing_section",
+      "only_checks": null,
+      "has_only_checks": false,
+      "rule_config_json": {
+        "note": "当前missing_section内置清单，如需该规则需改造missing_section支持配置",
+        "executor": "missing_section",
+        "review_category": "OTHER",
+        "required_sections": [
+          "结论",
+          "建议"
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "code": "CP_MISSING_SECTION",
+      "name": "必备章节缺失检查",
+      "category": "TECH",
+      "engine_type": "RULE",
+      "review_category": "TECH",
+      "enabled": true,
+      "order_index": null,
+      "executor": null,
+      "only_checks": null,
+      "has_only_checks": false,
+      "rule_config_json": {
+        "required_prefix": [
+          "1",
+          "2",
+          "7"
+        ]
+      }
+    },
+    {
+      "id": 1,
+      "code": "CP_SUM_MISMATCH",
+      "name": "表内合计计算一致性",
+      "category": "CONSISTENCY",
+      "engine_type": "RULE",
+      "review_category": "CONSISTENCY",
+      "enabled": true,
+      "order_index": null,
+      "executor": null,
+      "only_checks": null,
+      "has_only_checks": false,
+      "rule_config_json": {
+        "tolerance": 0.01
+      }
+    },
+    {
+      "id": 2,
+      "code": "CP_UNIT_INCONSISTENT",
+      "name": "单位一致性检查（元/万元等）",
+      "category": "CONSISTENCY",
+      "engine_type": "RULE",
+      "review_category": "CONSISTENCY",
+      "enabled": true,
+      "order_index": null,
+      "executor": null,
+      "only_checks": null,
+      "has_only_checks": false,
+      "rule_config_json": {}
+    },
+    {
+      "id": 4,
+      "code": "FORMAT_STRUCTURE",
+      "name": "格式审查-结构完整性",
+      "category": "FORMAT",
+      "engine_type": "RULE",
+      "review_category": "FORMAT",
+      "enabled": false,
+      "order_index": 10,
+      "executor": "format_review",
+      "only_checks": [
+        "cover_required_elements",
+        "toc_present"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "format_review",
+        "only_checks": [
+          "cover_required_elements",
+          "toc_present"
+        ],
+        "required_elements": [
+          "项目名称",
+          "建设单位",
+          "编制单位",
+          "版本日期"
+        ]
+      }
+    },
+    {
+      "id": 5,
+      "code": "FORMAT_NUMBERING",
+      "name": "格式审查-编号规范",
+      "category": "FORMAT",
+      "engine_type": "RULE",
+      "review_category": "FORMAT",
+      "enabled": false,
+      "order_index": 11,
+      "executor": "format_review",
+      "only_checks": [
+        "heading_numbering",
+        "figure_numbering",
+        "table_numbering"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "format_review",
+        "only_checks": [
+          "heading_numbering",
+          "figure_numbering",
+          "table_numbering"
+        ]
+      }
+    },
+    {
+      "id": 6,
+      "code": "FORMAT_REFERENCE",
+      "name": "格式审查-引用规范",
+      "category": "FORMAT",
+      "engine_type": "RULE",
+      "review_category": "FORMAT",
+      "enabled": false,
+      "order_index": 12,
+      "executor": "format_review",
+      "only_checks": [
+        "table_referenced",
+        "figure_referenced"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "format_review",
+        "only_checks": [
+          "table_referenced",
+          "figure_referenced"
+        ]
+      }
+    },
+    {
+      "id": 7,
+      "code": "FORMAT_UNIT",
+      "name": "格式审查-单位符号规范",
+      "category": "FORMAT",
+      "engine_type": "RULE",
+      "review_category": "FORMAT",
+      "enabled": false,
+      "order_index": 13,
+      "executor": "format_review",
+      "only_checks": [
+        "unit_symbol_consistency",
+        "table_unit_column_present"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "format_review",
+        "only_checks": [
+          "unit_symbol_consistency",
+          "table_unit_column_present"
+        ]
+      }
+    },
+    {
+      "id": 8,
+      "code": "FORMAT_TABLE",
+      "name": "格式审查-表格格式",
+      "category": "FORMAT",
+      "engine_type": "RULE",
+      "review_category": "FORMAT",
+      "enabled": false,
+      "order_index": 14,
+      "executor": "format_review",
+      "only_checks": [
+        "table_caption_present",
+        "table_numbering",
+        "table_referenced",
+        "table_unit_column_present"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "format_review",
+        "only_checks": [
+          "table_caption_present",
+          "table_numbering",
+          "table_referenced",
+          "table_unit_column_present"
+        ]
+      }
+    },
+    {
+      "id": 9,
+      "code": "CONTENT_SECTIONS",
+      "name": "内容审查-章节完备性",
+      "category": "CONTENT",
+      "engine_type": "RULE",
+      "review_category": "CONTENT",
+      "enabled": false,
+      "order_index": 20,
+      "executor": "content_review",
+      "only_checks": [
+        "required_sections"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "content_review",
+        "only_checks": [
+          "required_sections"
+        ],
+        "required_sections": {
+          "投资": [
+            "投资"
+          ],
+          "综合说明": [
+            "综合说明",
+            "概述"
+          ],
+          "防治措施": [
+            "防治措施"
+          ],
+          "项目概况": [
+            "项目概况"
+          ],
+          "水土流失预测": [
+            "水土流失预测"
+          ]
+        }
+      }
+    },
+    {
+      "id": 10,
+      "code": "CONTENT_TRIGGER",
+      "name": "内容审查-条件触发内容",
+      "category": "CONTENT",
+      "engine_type": "RULE",
+      "review_category": "CONTENT",
+      "enabled": false,
+      "order_index": 21,
+      "executor": "content_review",
+      "only_checks": [
+        "trigger_requirements"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "content_review",
+        "only_checks": [
+          "trigger_requirements"
+        ]
+      }
+    },
+    {
+      "id": 11,
+      "code": "CONTENT_ELEMENTS",
+      "name": "内容审查-要素齐备",
+      "category": "CONTENT",
+      "engine_type": "RULE",
+      "review_category": "CONTENT",
+      "enabled": false,
+      "order_index": 22,
+      "executor": "content_review",
+      "only_checks": [
+        "required_elements"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "content_review",
+        "only_checks": [
+          "required_elements"
+        ]
+      }
+    },
+    {
+      "id": 40,
+      "code": "FMT_AI_001",
+      "name": "印制格式合规性（页眉页脚/字体字号/行距/题注位置）",
+      "category": "AI",
+      "engine_type": "AI",
+      "review_category": "FORMAT",
+      "enabled": false,
+      "order_index": 1100,
+      "executor": null,
+      "only_checks": null,
+      "has_only_checks": false,
+      "rule_config_json": {
+        "top_k": 6,
+        "kb_keywords": "办水保 2018 135 印制 格式 页眉 页脚 字体 字号 行距 题注 页码",
+        "review_category": "FORMAT",
+        "max_context_length": 12000
+      }
+    },
+    {
+      "id": 41,
+      "code": "FMT_AI_002",
+      "name": "目录与正文标题一致性（语义层级/缺失/重复）",
+      "category": "AI",
+      "engine_type": "AI",
+      "review_category": "FORMAT",
+      "enabled": false,
+      "order_index": 1101,
+      "executor": null,
+      "only_checks": null,
+      "has_only_checks": false,
+      "rule_config_json": {
+        "top_k": 5,
+        "kb_keywords": "目录 编制格式 标题 层级",
+        "review_category": "FORMAT",
+        "max_context_length": 12000
+      }
+    },
+    {
+      "id": 42,
+      "code": "FMT_AI_003",
+      "name": "图表题注规范性（题注内容是否完整、编号命名是否符合习惯）",
+      "category": "AI",
+      "engine_type": "AI",
+      "review_category": "FORMAT",
+      "enabled": false,
+      "order_index": 1102,
+      "executor": null,
+      "only_checks": null,
+      "has_only_checks": false,
+      "rule_config_json": {
+        "top_k": 5,
+        "kb_keywords": "图 表 题注 编号 引用",
+        "review_category": "FORMAT",
+        "max_context_length": 12000
+      }
+    },
+    {
+      "id": 43,
+      "code": "FMT_AI_004",
+      "name": "计量单位与数值表达（文本语义层面）",
+      "category": "AI",
+      "engine_type": "AI",
+      "review_category": "FORMAT",
+      "enabled": false,
+      "order_index": 1103,
+      "executor": null,
+      "only_checks": null,
+      "has_only_checks": false,
+      "rule_config_json": {
+        "top_k": 5,
+        "kb_keywords": "计量单位 表达 规范 hm² m³ 万元",
+        "review_category": "FORMAT",
+        "max_context_length": 12000
+      }
+    },
+    {
+      "id": 58,
+      "code": "CNT_AI_001",
+      "name": "论证充分性：防治分区与措施配置是否闭环",
+      "category": "AI",
+      "engine_type": "AI",
+      "review_category": "CONTENT",
+      "enabled": false,
+      "order_index": 2100,
+      "executor": null,
+      "only_checks": null,
+      "has_only_checks": false,
+      "rule_config_json": {
+        "top_k": 6,
+        "kb_keywords": "水土保持方案 技术审查要点 分区 措施 配置",
+        "review_category": "CONTENT",
+        "max_context_length": 12000
+      }
+    },
+    {
+      "id": 59,
+      "code": "CNT_AI_002",
+      "name": "土地利用现状分类用语规范性（GBT21010）",
+      "category": "AI",
+      "engine_type": "AI",
+      "review_category": "CONTENT",
+      "enabled": false,
+      "order_index": 2101,
+      "executor": null,
+      "only_checks": null,
+      "has_only_checks": false,
+      "rule_config_json": {
+        "top_k": 6,
+        "kb_keywords": "GB/T 21010-2017 土地利用 现状 分类",
+        "review_category": "CONTENT",
+        "max_context_length": 12000
+      }
+    },
+    {
+      "id": 60,
+      "code": "CNT_AI_003",
+      "name": "预测参数来源与合理性（侵蚀模数/扰动强度/时段）",
+      "category": "AI",
+      "engine_type": "AI",
+      "review_category": "CONTENT",
+      "enabled": false,
+      "order_index": 2102,
+      "executor": null,
+      "only_checks": null,
+      "has_only_checks": false,
+      "rule_config_json": {
+        "top_k": 6,
+        "kb_keywords": "GB 50433-2018 预测 侵蚀模数 参数 依据",
+        "review_category": "CONTENT",
+        "max_context_length": 12000
+      }
+    },
+    {
+      "id": 61,
+      "code": "CNT_AI_004",
+      "name": "投资估算依据与编制口径（是否引用相应编规）",
+      "category": "AI",
+      "engine_type": "AI",
+      "review_category": "CONTENT",
+      "enabled": false,
+      "order_index": 2103,
+      "executor": null,
+      "only_checks": null,
+      "has_only_checks": false,
+      "rule_config_json": {
+        "top_k": 6,
+        "kb_keywords": "估算 编制规定 水土保持 工程 费用 取费",
+        "review_category": "CONTENT",
+        "max_context_length": 12000
+      }
+    },
+    {
+      "id": 75,
+      "code": "CNS_R_060",
+      "name": "关键字段（占地面积）启发式一致性（旧规则兜底）",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": false,
+      "order_index": 3060,
+      "executor": "key_field_inconsistent",
+      "only_checks": null,
+      "has_only_checks": false,
+      "rule_config_json": {
+        "note": "旧规则，建议用doc_fact一致性替代",
+        "executor": "key_field_inconsistent",
+        "review_category": "CONSISTENCY"
+      }
+    },
+    {
+      "id": 76,
+      "code": "CNS_AI_001",
+      "name": "同一指标口径一致性（是否含临时/是否含弃方外运等）",
+      "category": "AI",
+      "engine_type": "AI",
+      "review_category": "CONSISTENCY",
+      "enabled": false,
+      "order_index": 3100,
+      "executor": null,
+      "only_checks": null,
+      "has_only_checks": false,
+      "rule_config_json": {
+        "top_k": 6,
+        "kb_keywords": "水土保持 方案 审查 要点 口径 一致性",
+        "review_category": "CONSISTENCY",
+        "max_context_length": 12000
+      }
+    },
+    {
+      "id": 77,
+      "code": "CNS_AI_002",
+      "name": "表述一致性：同一地类/措施名称跨章节是否混用或矛盾",
+      "category": "AI",
+      "engine_type": "AI",
+      "review_category": "CONSISTENCY",
+      "enabled": false,
+      "order_index": 3101,
+      "executor": null,
+      "only_checks": null,
+      "has_only_checks": false,
+      "rule_config_json": {
+        "top_k": 5,
+        "kb_keywords": "术语 统一 分区 措施 名称",
+        "review_category": "CONSISTENCY",
+        "max_context_length": 12000
+      }
+    },
+    {
+      "id": 78,
+      "code": "CNS_AI_003",
+      "name": "结论与数据一致性：结论句是否与表格结果矛盾",
+      "category": "AI",
+      "engine_type": "AI",
+      "review_category": "CONSISTENCY",
+      "enabled": false,
+      "order_index": 3102,
+      "executor": null,
+      "only_checks": null,
+      "has_only_checks": false,
+      "rule_config_json": {
+        "top_k": 5,
+        "kb_keywords": "结论 与 表格 数据 一致",
+        "review_category": "CONSISTENCY",
+        "max_context_length": 12000
+      }
+    },
+    {
+      "id": 79,
+      "code": "CNS_AI_004",
+      "name": "图表与正文一致性：图名/表名与正文描述是否匹配",
+      "category": "AI",
+      "engine_type": "AI",
+      "review_category": "CONSISTENCY",
+      "enabled": false,
+      "order_index": 3103,
+      "executor": null,
+      "only_checks": null,
+      "has_only_checks": false,
+      "rule_config_json": {
+        "top_k": 5,
+        "kb_keywords": "图表 名称 正文 描述 匹配",
+        "review_category": "CONSISTENCY",
+        "max_context_length": 12000
+      }
+    },
+    {
+      "id": 87,
+      "code": "TBL_R_008",
+      "name": "表内出现负值（提示核查）",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": false,
+      "order_index": 4007,
+      "executor": "sum_mismatch",
+      "only_checks": [
+        "negative_values"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "sum_mismatch",
+        "severity": "S3",
+        "only_checks": [
+          "negative_values"
+        ],
+        "review_category": "TABLE_CALC"
+      }
+    },
+    {
+      "id": 90,
+      "code": "TBL_R_011",
+      "name": "表头/表尾识别规则（合计关键词可配置）",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": false,
+      "order_index": 4010,
+      "executor": "sum_mismatch",
+      "only_checks": [
+        "sum_keyword_tuning"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "sum_mismatch",
+        "only_checks": [
+          "sum_keyword_tuning"
+        ],
+        "sum_keywords": [
+          "合计",
+          "小计",
+          "总计",
+          "合计值",
+          "合计面积",
+          "合计金额"
+        ],
+        "review_category": "TABLE_CALC"
+      }
+    },
+    {
+      "id": 91,
+      "code": "TBL_R_012",
+      "name": "表格重复/空表检查（无有效数值）",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": false,
+      "order_index": 4011,
+      "executor": "sum_mismatch",
+      "only_checks": [
+        "empty_table_or_no_numbers"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "sum_mismatch",
+        "severity": "S3",
+        "only_checks": [
+          "empty_table_or_no_numbers"
+        ],
+        "review_category": "TABLE_CALC"
+      }
+    },
+    {
+      "id": 92,
+      "code": "TBL_AI_001",
+      "name": "跨表汇总关系核查（分区表→汇总表）",
+      "category": "AI",
+      "engine_type": "AI",
+      "review_category": "TABLE_CALC",
+      "enabled": false,
+      "order_index": 4100,
+      "executor": null,
+      "only_checks": null,
+      "has_only_checks": false,
+      "rule_config_json": {
+        "top_k": 5,
+        "kb_keywords": "汇总表 分区 表内计算 合计",
+        "review_category": "TABLE_CALC",
+        "max_context_length": 12000
+      }
+    },
+    {
+      "id": 93,
+      "code": "TBL_AI_002",
+      "name": "表格口径一致性（同名字段不同单位/不同含义）",
+      "category": "AI",
+      "engine_type": "AI",
+      "review_category": "TABLE_CALC",
+      "enabled": false,
+      "order_index": 4101,
+      "executor": null,
+      "only_checks": null,
+      "has_only_checks": false,
+      "rule_config_json": {
+        "top_k": 5,
+        "kb_keywords": "表格 字段 口径 单位 一致",
+        "review_category": "TABLE_CALC",
+        "max_context_length": 12000
+      }
+    },
+    {
+      "id": 94,
+      "code": "TBL_AI_003",
+      "name": "数值异常检测（离群：面积/投资/土石方明显过大或过小）",
+      "category": "AI",
+      "engine_type": "AI",
+      "review_category": "TABLE_CALC",
+      "enabled": false,
+      "order_index": 4102,
+      "executor": null,
+      "only_checks": null,
+      "has_only_checks": false,
+      "rule_config_json": {
+        "top_k": 5,
+        "kb_keywords": "合理性 校核 数值 异常",
+        "review_category": "TABLE_CALC",
+        "max_context_length": 12000
+      }
+    },
+    {
+      "id": 95,
+      "code": "TBL_AI_004",
+      "name": "表格标题与内容一致性（标题说A内容是B）",
+      "category": "AI",
+      "engine_type": "AI",
+      "review_category": "TABLE_CALC",
+      "enabled": false,
+      "order_index": 4103,
+      "executor": null,
+      "only_checks": null,
+      "has_only_checks": false,
+      "rule_config_json": {
+        "top_k": 5,
+        "kb_keywords": "表格 标题 内容 一致性",
+        "review_category": "TABLE_CALC",
+        "max_context_length": 12000
+      }
+    },
+    {
+      "id": 104,
+      "code": "FOR_R_302",
+      "name": "预测计算：分区侵蚀量汇总=总侵蚀量（如有汇总表）",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": false,
+      "order_index": 5021,
+      "executor": "formula_calculation",
+      "only_checks": [
+        "prediction_sum"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "formula_calculation",
+        "tolerance": 0.02,
+        "only_checks": [
+          "prediction_sum"
+        ],
+        "review_category": "FORMULA_CALC"
+      }
+    },
+    {
+      "id": 105,
+      "code": "FOR_R_401",
+      "name": "费用/投资公式复算（直接费+间接费+预备费…）",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": false,
+      "order_index": 5030,
+      "executor": "formula_calculation",
+      "only_checks": [
+        "investment_formula"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "note": "需要你补充费用项抽取与公式",
+        "executor": "formula_calculation",
+        "only_checks": [
+          "investment_formula"
+        ],
+        "review_category": "FORMULA_CALC"
+      }
+    },
+    {
+      "id": 106,
+      "code": "FOR_R_402",
+      "name": "单位换算复算（亩↔hm²↔m²，万↔元）",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": false,
+      "order_index": 5031,
+      "executor": "formula_calculation",
+      "only_checks": [
+        "unit_conversion"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "note": "需要你在fact_service记录单位并统一",
+        "executor": "formula_calculation",
+        "only_checks": [
+          "unit_conversion"
+        ],
+        "review_category": "FORMULA_CALC"
+      }
+    },
+    {
+      "id": 107,
+      "code": "FOR_R_999",
+      "name": "公式总控：执行全部公式（回归用）",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": false,
+      "order_index": 5099,
+      "executor": "formula_calculation",
+      "only_checks": [
+        "all"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "note": "用于回归测试",
+        "executor": "formula_calculation",
+        "only_checks": [
+          "all"
+        ],
+        "review_category": "FORMULA_CALC"
+      }
+    },
+    {
+      "id": 108,
+      "code": "FOR_AI_001",
+      "name": "变量缺失诊断：六项指标分子/分母缺失或口径不清",
+      "category": "AI",
+      "engine_type": "AI",
+      "review_category": "FORMULA_CALC",
+      "enabled": false,
+      "order_index": 5100,
+      "executor": null,
+      "only_checks": null,
+      "has_only_checks": false,
+      "rule_config_json": {
+        "top_k": 6,
+        "kb_keywords": "六项指标 治理度 控制比 渣土防护率 表土保护率 恢复率 覆盖率 复算",
+        "review_category": "FORMULA_CALC",
+        "max_context_length": 12000
+      }
+    },
+    {
+      "id": 109,
+      "code": "FOR_AI_002",
+      "name": "预测参数合理性：侵蚀模数与时段划分是否有依据",
+      "category": "AI",
+      "engine_type": "AI",
+      "review_category": "FORMULA_CALC",
+      "enabled": false,
+      "order_index": 5101,
+      "executor": null,
+      "only_checks": null,
+      "has_only_checks": false,
+      "rule_config_json": {
+        "top_k": 6,
+        "kb_keywords": "侵蚀模数 时段 分区面积 依据 GB 50433-2018",
+        "review_category": "FORMULA_CALC",
+        "max_context_length": 12000
+      }
+    },
+    {
+      "id": 110,
+      "code": "FOR_AI_003",
+      "name": "平衡关系合理性：土石方平衡口径（损耗/借方/调运）说明",
+      "category": "AI",
+      "engine_type": "AI",
+      "review_category": "FORMULA_CALC",
+      "enabled": false,
+      "order_index": 5102,
+      "executor": null,
+      "only_checks": null,
+      "has_only_checks": false,
+      "rule_config_json": {
+        "top_k": 5,
+        "kb_keywords": "土石方 平衡 口径 损耗 借方 外运",
+        "review_category": "FORMULA_CALC",
+        "max_context_length": 12000
+      }
+    },
+    {
+      "id": 111,
+      "code": "FOR_AI_004",
+      "name": "费用组成合理性：水保投资费用项缺失/重复/口径不清",
+      "category": "AI",
+      "engine_type": "AI",
+      "review_category": "FORMULA_CALC",
+      "enabled": false,
+      "order_index": 5103,
+      "executor": null,
+      "only_checks": null,
+      "has_only_checks": false,
+      "rule_config_json": {
+        "top_k": 6,
+        "kb_keywords": "水土保持 投资 费用 组成 取费 依据",
+        "review_category": "FORMULA_CALC",
+        "max_context_length": 12000
+      }
+    },
+    {
+      "id": 114,
+      "code": "BIZ_R_003",
+      "name": "措施-风险闭环：有临水施工→沉沙/截排水措施必须出现（规则）",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": false,
+      "order_index": 6002,
+      "executor": "content_review",
+      "only_checks": [
+        "trigger_requirements"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "note": "建议从content_review拆出专用biz executor",
+        "executor": "content_review",
+        "only_checks": [
+          "trigger_requirements"
+        ],
+        "review_category": "BIZ_LOGIC",
+        "trigger_requirements": {
+          "临水施工": {
+            "keywords": [
+              "河道",
+              "水库",
+              "溪流",
+              "临水"
+            ],
+            "required_measures": [
+              "沉沙",
+              "截排水",
+              "挡土",
+              "围堰"
+            ],
+            "required_sections": [
+              "防治措施"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 115,
+      "code": "BIZ_R_004",
+      "name": "数据关系：防治责任范围面积≥扰动面积（规则）",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": false,
+      "order_index": 6003,
+      "executor": "consistency_review",
+      "only_checks": [
+        "fact_relation"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "note": "需要你在consistency_review支持relation",
+        "executor": "consistency_review",
+        "relation": "防治责任范围面积 >= 扰动面积",
+        "fact_keys": [
+          "防治责任范围面积",
+          "扰动面积"
+        ],
+        "only_checks": [
+          "fact_relation"
+        ],
+        "review_category": "BIZ_LOGIC"
+      }
+    },
+    {
+      "id": 116,
+      "code": "BIZ_R_005",
+      "name": "数据关系：永久+临时=总占地（规则）",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": false,
+      "order_index": 6004,
+      "executor": "consistency_review",
+      "only_checks": [
+        "fact_relation"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "consistency_review",
+        "relation": "永久占地 + 临时占地 = 总占地面积",
+        "fact_keys": [
+          "永久占地",
+          "临时占地",
+          "总占地面积"
+        ],
+        "only_checks": [
+          "fact_relation"
+        ],
+        "review_category": "BIZ_LOGIC"
+      }
+    },
+    {
+      "id": 117,
+      "code": "BIZ_R_006",
+      "name": "数据关系：弃方量≥外运量（如外运为弃方去向）",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": false,
+      "order_index": 6005,
+      "executor": "consistency_review",
+      "only_checks": [
+        "fact_relation"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "consistency_review",
+        "relation": "弃方 >= 外运量",
+        "fact_keys": [
+          "弃方",
+          "外运量"
+        ],
+        "only_checks": [
+          "fact_relation"
+        ],
+        "review_category": "BIZ_LOGIC"
+      }
+    },
+    {
+      "id": 119,
+      "code": "BIZ_R_008",
+      "name": "触发：表土剥离→必须有表土堆存与保护措施（文本）",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": false,
+      "order_index": 6007,
+      "executor": "content_review",
+      "only_checks": [
+        "trigger_requirements"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "content_review",
+        "only_checks": [
+          "trigger_requirements"
+        ],
+        "review_category": "BIZ_LOGIC",
+        "trigger_requirements": {
+          "表土剥离": {
+            "keywords": [
+              "表土剥离",
+              "剥离表土"
+            ],
+            "required_measures": [
+              "覆盖",
+              "围挡",
+              "排水",
+              "防冲刷"
+            ],
+            "required_sections": [
+              "表土保护",
+              "表土堆存"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 120,
+      "code": "BIZ_R_009",
+      "name": "触发：边坡/高填方→必须有护坡与排水措施（文本）",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": false,
+      "order_index": 6008,
+      "executor": "content_review",
+      "only_checks": [
+        "trigger_requirements"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "content_review",
+        "only_checks": [
+          "trigger_requirements"
+        ],
+        "review_category": "BIZ_LOGIC",
+        "trigger_requirements": {
+          "边坡高填方": {
+            "keywords": [
+              "边坡",
+              "高填方",
+              "高挖方"
+            ],
+            "required_measures": [
+              "护坡",
+              "排水",
+              "截水沟",
+              "跌水"
+            ],
+            "required_sections": [
+              "工程措施"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 122,
+      "code": "BIZ_R_011",
+      "name": "地方性要求：广东省水土保持条例提及的禁限行为提示（AI优先）",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": false,
+      "order_index": 6010,
+      "executor": "business_logic_review",
+      "only_checks": null,
+      "has_only_checks": false,
+      "rule_config_json": {
+        "note": "建议后续用AI+知识库实现条款比对",
+        "executor": "business_logic_review",
+        "review_category": "BIZ_LOGIC"
+      }
+    },
+    {
+      "id": 123,
+      "code": "BIZ_R_012",
+      "name": "审查要点：水保监〔2020〕63号关注点覆盖（AI优先）",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": false,
+      "order_index": 6011,
+      "executor": "business_logic_review",
+      "only_checks": null,
+      "has_only_checks": false,
+      "rule_config_json": {
+        "note": "建议后续用AI+知识库实现审查要点逐条核对",
+        "executor": "business_logic_review",
+        "review_category": "BIZ_LOGIC"
+      }
+    },
+    {
+      "id": 124,
+      "code": "BIZ_AI_001",
+      "name": "条款匹配：对照水保监〔2020〕63号审查要点逐条核对缺失项",
+      "category": "AI",
+      "engine_type": "AI",
+      "review_category": "BIZ_LOGIC",
+      "enabled": false,
+      "order_index": 6100,
+      "executor": null,
+      "only_checks": null,
+      "has_only_checks": false,
+      "rule_config_json": {
+        "top_k": 8,
+        "kb_keywords": "水保监 2020 63 审查要点",
+        "review_category": "BIZ_LOGIC",
+        "max_context_length": 14000
+      }
+    },
+    {
+      "id": 125,
+      "code": "BIZ_AI_002",
+      "name": "条款匹配：对照广东省水土保持条例，检查是否涉及禁限事项与合规性说明",
+      "category": "AI",
+      "engine_type": "AI",
+      "review_category": "BIZ_LOGIC",
+      "enabled": false,
+      "order_index": 6101,
+      "executor": null,
+      "only_checks": null,
+      "has_only_checks": false,
+      "rule_config_json": {
+        "top_k": 8,
+        "kb_keywords": "广东省 水土保持 条例 禁限 弃渣 消纳 临时用地",
+        "review_category": "BIZ_LOGIC",
+        "max_context_length": 14000
+      }
+    },
+    {
+      "id": 126,
+      "code": "BIZ_AI_003",
+      "name": "措施合理性：工程/植物/临时措施配置是否与扰动类型匹配",
+      "category": "AI",
+      "engine_type": "AI",
+      "review_category": "BIZ_LOGIC",
+      "enabled": false,
+      "order_index": 6102,
+      "executor": null,
+      "only_checks": null,
+      "has_only_checks": false,
+      "rule_config_json": {
+        "top_k": 6,
+        "kb_keywords": "水土保持 措施 配置 合理性 工程 植物 临时",
+        "review_category": "BIZ_LOGIC",
+        "max_context_length": 14000
+      }
+    },
+    {
+      "id": 127,
+      "code": "BIZ_AI_004",
+      "name": "投资合理性：措施工程量×单价×取费口径是否与编规一致（抽样核查）",
+      "category": "AI",
+      "engine_type": "AI",
+      "review_category": "BIZ_LOGIC",
+      "enabled": false,
+      "order_index": 6103,
+      "executor": null,
+      "only_checks": null,
+      "has_only_checks": false,
+      "rule_config_json": {
+        "top_k": 8,
+        "kb_keywords": "水土保持 工程 概算 估算 编制规定 取费",
+        "review_category": "BIZ_LOGIC",
+        "max_context_length": 14000
+      }
+    },
+    {
+      "id": 128,
+      "code": "OTH_R_001",
+      "name": "系统检查：doc_outline_node 不能为空且层级合法",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": false,
+      "order_index": 7000,
+      "executor": "system_check",
+      "only_checks": [
+        "outline_not_empty",
+        "outline_level_valid"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "note": "需要新增system_check执行器",
+        "executor": "system_check",
+        "min_nodes": 10,
+        "only_checks": [
+          "outline_not_empty",
+          "outline_level_valid"
+        ],
+        "review_category": "OTHER"
+      }
+    },
+    {
+      "id": 129,
+      "code": "OTH_R_002",
+      "name": "系统检查：doc_block 不能为空且order_index连续（解析质量）",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": false,
+      "order_index": 7001,
+      "executor": "system_check",
+      "only_checks": [
+        "blocks_not_empty",
+        "order_index_monotonic"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "system_check",
+        "min_blocks": 200,
+        "only_checks": [
+          "blocks_not_empty",
+          "order_index_monotonic"
+        ],
+        "review_category": "OTHER"
+      }
+    },
+    {
+      "id": 130,
+      "code": "OTH_R_003",
+      "name": "系统检查：表格解析质量（doc_table_cell数量/空表比例）",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": false,
+      "order_index": 7002,
+      "executor": "system_check",
+      "only_checks": [
+        "table_parse_quality"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "system_check",
+        "only_checks": [
+          "table_parse_quality"
+        ],
+        "review_category": "OTHER",
+        "min_cells_per_table": 4,
+        "max_empty_table_ratio": 0.2
+      }
+    },
+    {
+      "id": 131,
+      "code": "OTH_R_004",
+      "name": "系统检查：图片/图件引用但未解析到资源（如doc_image缺失）",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": false,
+      "order_index": 7003,
+      "executor": "system_check",
+      "only_checks": [
+        "image_ref_but_missing_asset"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "note": "需要doc_image表或资源表",
+        "executor": "system_check",
+        "only_checks": [
+          "image_ref_but_missing_asset"
+        ],
+        "review_category": "OTHER"
+      }
+    },
+    {
+      "id": 135,
+      "code": "OTH_R_008",
+      "name": "重要图件存在（位置图/总平面/防治分区图/措施布置图）",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": false,
+      "order_index": 7007,
+      "executor": "content_review",
+      "only_checks": [
+        "required_elements"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "content_review",
+        "only_checks": [
+          "required_elements"
+        ],
+        "review_category": "OTHER",
+        "required_phrases": [
+          "位置图",
+          "总平面",
+          "防治分区图",
+          "措施布置图"
+        ]
+      }
+    },
+    {
+      "id": 136,
+      "code": "OTH_R_009",
+      "name": "关键表格存在（占地/扰动/土石方/投资）",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": false,
+      "order_index": 7008,
+      "executor": "content_review",
+      "only_checks": [
+        "required_elements"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "executor": "content_review",
+        "only_checks": [
+          "required_elements"
+        ],
+        "review_category": "OTHER",
+        "required_phrases": [
+          "占地",
+          "扰动",
+          "土石方",
+          "投资",
+          "概算",
+          "估算"
+        ]
+      }
+    },
+    {
+      "id": 137,
+      "code": "OTH_R_010",
+      "name": "导出审查报告字段完整（issue->报告）",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": false,
+      "order_index": 7009,
+      "executor": "system_check",
+      "only_checks": [
+        "report_export_fields"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "note": "需要在导出模块实现",
+        "executor": "system_check",
+        "only_checks": [
+          "report_export_fields"
+        ],
+        "review_category": "OTHER"
+      }
+    },
+    {
+      "id": 138,
+      "code": "OTH_R_011",
+      "name": "问题证据有效性（evidence_block_ids存在且能定位）",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": false,
+      "order_index": 7010,
+      "executor": "system_check",
+      "only_checks": [
+        "issue_evidence_valid"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "note": "需要系统级检查",
+        "executor": "system_check",
+        "only_checks": [
+          "issue_evidence_valid"
+        ],
+        "review_category": "OTHER"
+      }
+    },
+    {
+      "id": 139,
+      "code": "OTH_R_012",
+      "name": "重复问题抑制（同类同位置重复）",
+      "category": "RULE",
+      "engine_type": "RULE",
+      "review_category": "RULE",
+      "enabled": false,
+      "order_index": 7011,
+      "executor": "system_check",
+      "only_checks": [
+        "dedup_issues"
+      ],
+      "has_only_checks": true,
+      "rule_config_json": {
+        "note": "建议在insert_issue前做去重",
+        "executor": "system_check",
+        "only_checks": [
+          "dedup_issues"
+        ],
+        "review_category": "OTHER"
+      }
+    },
+    {
+      "id": 140,
+      "code": "OTH_AI_001",
+      "name": "引用完整性：规范/编规引用是否过期或缺失关键版本号",
+      "category": "AI",
+      "engine_type": "AI",
+      "review_category": "OTHER",
+      "enabled": false,
+      "order_index": 7100,
+      "executor": null,
+      "only_checks": null,
+      "has_only_checks": false,
+      "rule_config_json": {
+        "top_k": 6,
+        "kb_keywords": "引用 标准 编规 版本号 年份",
+        "review_category": "OTHER",
+        "max_context_length": 12000
+      }
+    },
+    {
+      "id": 141,
+      "code": "OTH_AI_002",
+      "name": "可读性与歧义：关键结论句是否存在歧义/模糊表述",
+      "category": "AI",
+      "engine_type": "AI",
+      "review_category": "OTHER",
+      "enabled": false,
+      "order_index": 7101,
+      "executor": null,
+      "only_checks": null,
+      "has_only_checks": false,
+      "rule_config_json": {
+        "top_k": 5,
+        "kb_keywords": "结论 建议 表述 具体化",
+        "review_category": "OTHER",
+        "max_context_length": 12000
+      }
+    },
+    {
+      "id": 142,
+      "code": "OTH_AI_003",
+      "name": "版式与内容风险：复制粘贴痕迹/前后矛盾/未替换占位符",
+      "category": "AI",
+      "engine_type": "AI",
+      "review_category": "OTHER",
+      "enabled": false,
+      "order_index": 7102,
+      "executor": null,
+      "only_checks": null,
+      "has_only_checks": false,
+      "rule_config_json": {
+        "top_k": 5,
+        "kb_keywords": "占位符 XXX 项目 复制 粘贴 矛盾",
+        "review_category": "OTHER",
+        "max_context_length": 12000
+      }
+    },
+    {
+      "id": 143,
+      "code": "OTH_AI_004",
+      "name": "审查结论生成：基于发现问题给出结构化审查结论草案",
+      "category": "AI",
+      "engine_type": "AI",
+      "review_category": "OTHER",
+      "enabled": false,
+      "order_index": 7103,
+      "executor": null,
+      "only_checks": null,
+      "has_only_checks": false,
+      "rule_config_json": {
+        "top_k": 6,
+        "kb_keywords": "审查 结论 草案 重大问题 一般问题",
+        "review_category": "OTHER",
+        "max_context_length": 12000
+      }
+    }
+  ]
+}

@@ -1,0 +1,109 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\Workspace\\SWS_Review_Cloud_Backend\\SWS_Review_Cloud_Backend_MVP\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{19C46840-C751-47B5-91CE-BC6DAC8870A9}|SWS_Review_Cloud_Backend_MVP.pyproj|D:\\Workspace\\SWS_Review_Cloud_Backend\\SWS_Review_Cloud_Backend_MVP\\README.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}",
+      "RelativeMoniker": "D:0:0:{19C46840-C751-47B5-91CE-BC6DAC8870A9}|SWS_Review_Cloud_Backend_MVP.pyproj|solutionrelative:README.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{19C46840-C751-47B5-91CE-BC6DAC8870A9}|SWS_Review_Cloud_Backend_MVP.pyproj|D:\\Workspace\\SWS_Review_Cloud_Backend\\SWS_Review_Cloud_Backend_MVP\\\u5BFC\u51FAcheckpoint\u6570\u636E.py||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{19C46840-C751-47B5-91CE-BC6DAC8870A9}|SWS_Review_Cloud_Backend_MVP.pyproj|solutionrelative:\u5BFC\u51FAcheckpoint\u6570\u636E.py||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{19C46840-C751-47B5-91CE-BC6DAC8870A9}|SWS_Review_Cloud_Backend_MVP.pyproj|D:\\Workspace\\SWS_Review_Cloud_Backend\\SWS_Review_Cloud_Backend_MVP\\\u6267\u884C\u8FC1\u79FB011.bat||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{19C46840-C751-47B5-91CE-BC6DAC8870A9}|SWS_Review_Cloud_Backend_MVP.pyproj|solutionrelative:\u6267\u884C\u8FC1\u79FB011.bat||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{19C46840-C751-47B5-91CE-BC6DAC8870A9}|SWS_Review_Cloud_Backend_MVP.pyproj|D:\\Workspace\\SWS_Review_Cloud_Backend\\SWS_Review_Cloud_Backend_MVP\\\u6267\u884C\u8FC1\u79FB011.py||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{19C46840-C751-47B5-91CE-BC6DAC8870A9}|SWS_Review_Cloud_Backend_MVP.pyproj|solutionrelative:\u6267\u884C\u8FC1\u79FB011.py||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{19C46840-C751-47B5-91CE-BC6DAC8870A9}|SWS_Review_Cloud_Backend_MVP.pyproj|D:\\Workspace\\SWS_Review_Cloud_Backend\\SWS_Review_Cloud_Backend_MVP\\\u6D4B\u8BD5\u5BA1\u67E5.py||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{19C46840-C751-47B5-91CE-BC6DAC8870A9}|SWS_Review_Cloud_Backend_MVP.pyproj|solutionrelative:\u6D4B\u8BD5\u5BA1\u67E5.py||{8B382828-6202-11D1-8870-0000F87579D2}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "README.md",
+              "DocumentMoniker": "D:\\Workspace\\SWS_Review_Cloud_Backend\\SWS_Review_Cloud_Backend_MVP\\README.md",
+              "RelativeDocumentMoniker": "README.md",
+              "ToolTip": "D:\\Workspace\\SWS_Review_Cloud_Backend\\SWS_Review_Cloud_Backend_MVP\\README.md*",
+              "RelativeToolTip": "README.md*",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2026-01-31T23:02:24.723Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "\u6267\u884C\u8FC1\u79FB011.py",
+              "DocumentMoniker": "D:\\Workspace\\SWS_Review_Cloud_Backend\\SWS_Review_Cloud_Backend_MVP\\\u6267\u884C\u8FC1\u79FB011.py",
+              "RelativeDocumentMoniker": "\u6267\u884C\u8FC1\u79FB011.py",
+              "ToolTip": "D:\\Workspace\\SWS_Review_Cloud_Backend\\SWS_Review_Cloud_Backend_MVP\\\u6267\u884C\u8FC1\u79FB011.py",
+              "RelativeToolTip": "\u6267\u884C\u8FC1\u79FB011.py",
+              "ViewState": "AgIAAA4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
+              "WhenOpened": "2026-01-31T22:35:54.412Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "\u6267\u884C\u8FC1\u79FB011.bat",
+              "DocumentMoniker": "D:\\Workspace\\SWS_Review_Cloud_Backend\\SWS_Review_Cloud_Backend_MVP\\\u6267\u884C\u8FC1\u79FB011.bat",
+              "RelativeDocumentMoniker": "\u6267\u884C\u8FC1\u79FB011.bat",
+              "ToolTip": "D:\\Workspace\\SWS_Review_Cloud_Backend\\SWS_Review_Cloud_Backend_MVP\\\u6267\u884C\u8FC1\u79FB011.bat",
+              "RelativeToolTip": "\u6267\u884C\u8FC1\u79FB011.bat",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000614|",
+              "WhenOpened": "2026-01-31T22:35:07.692Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "\u5BFC\u51FAcheckpoint\u6570\u636E.py",
+              "DocumentMoniker": "D:\\Workspace\\SWS_Review_Cloud_Backend\\SWS_Review_Cloud_Backend_MVP\\\u5BFC\u51FAcheckpoint\u6570\u636E.py",
+              "RelativeDocumentMoniker": "\u5BFC\u51FAcheckpoint\u6570\u636E.py",
+              "ToolTip": "D:\\Workspace\\SWS_Review_Cloud_Backend\\SWS_Review_Cloud_Backend_MVP\\\u5BFC\u51FAcheckpoint\u6570\u636E.py",
+              "RelativeToolTip": "\u5BFC\u51FAcheckpoint\u6570\u636E.py",
+              "ViewState": "AgIAACYAAAAAAAAAAAAAAEcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
+              "WhenOpened": "2026-01-31T22:32:51.189Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "\u6D4B\u8BD5\u5BA1\u67E5.py",
+              "DocumentMoniker": "D:\\Workspace\\SWS_Review_Cloud_Backend\\SWS_Review_Cloud_Backend_MVP\\\u6D4B\u8BD5\u5BA1\u67E5.py",
+              "RelativeDocumentMoniker": "\u6D4B\u8BD5\u5BA1\u67E5.py",
+              "ToolTip": "D:\\Workspace\\SWS_Review_Cloud_Backend\\SWS_Review_Cloud_Backend_MVP\\\u6D4B\u8BD5\u5BA1\u67E5.py",
+              "RelativeToolTip": "\u6D4B\u8BD5\u5BA1\u67E5.py",
+              "ViewState": "AgIAAG4BAAAAAAAAAAAywIUBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002457|",
+              "WhenOpened": "2026-01-31T22:16:22.094Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

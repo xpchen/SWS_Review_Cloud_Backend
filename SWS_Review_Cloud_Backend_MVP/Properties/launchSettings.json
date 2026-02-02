@@ -1,0 +1,34 @@
+{
+  "profiles": {
+    "FastAPI Server": {
+      "commandName": "Executable",
+      "executablePath": "${env:VIRTUAL_ENV}\\Scripts\\python.exe",
+      "commandLineArgs": "-m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000 --log-level info",
+      "workingDirectory": "${workspaceFolder}",
+      "environmentVariables": {
+        "PYTHONPATH": "${workspaceFolder}",
+        "PYTHONUNBUFFERED": "1"
+      }
+    },
+    "FastAPI (No Reload)": {
+      "commandName": "Executable",
+      "executablePath": "${env:VIRTUAL_ENV}\\Scripts\\python.exe",
+      "commandLineArgs": "-m uvicorn app.main:app --host 0.0.0.0 --port 8000",
+      "workingDirectory": "${workspaceFolder}",
+      "environmentVariables": {
+        "PYTHONPATH": "${workspaceFolder}",
+        "PYTHONUNBUFFERED": "1"
+      }
+    },
+    "Celery Worker": {
+      "commandName": "Executable",
+      "executablePath": "${env:VIRTUAL_ENV}\\Scripts\\python.exe",
+      "commandLineArgs": "-m celery -A app.worker.app worker --loglevel=info --pool=solo --autoreload",
+      "workingDirectory": "${workspaceFolder}",
+      "environmentVariables": {
+        "PYTHONPATH": "${workspaceFolder}",
+        "PYTHONUNBUFFERED": "1"
+      }
+    }
+  }
+}

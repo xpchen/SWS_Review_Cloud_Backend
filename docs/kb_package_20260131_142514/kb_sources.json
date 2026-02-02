@@ -1,0 +1,122 @@
+[
+  {
+    "source_local_id": 1,
+    "name": "《生产建设项目水土保持技术标准》（GB 50433-2018）",
+    "kb_type": "NORM",
+    "filename": "《生产建设项目水土保持技术标准》（GB 50433-2018）.pdf",
+    "abs_path": "/mnt/data/《生产建设项目水土保持技术标准》（GB 50433-2018）.pdf",
+    "sha256": "90a65803cc1ae76304f0f908a9af13be09ec8e8e9bcc13d3b8eb10f023e2a8de",
+    "size": 2113388,
+    "pages": 67,
+    "block_count": 0,
+    "extract_method": "IMAGE_ONLY"
+  },
+  {
+    "source_local_id": 2,
+    "name": "《水利工程设计概（估）算编制规定（水土保持工程）》",
+    "kb_type": "NORM",
+    "filename": "《水利工程设计概（估）算编制规定（水土保持工程）》.pdf",
+    "abs_path": "/mnt/data/《水利工程设计概（估）算编制规定（水土保持工程）》.pdf",
+    "sha256": "08e6ee2887c5c429788751b6a482c0f442a55357368d5535e99896a5f22326b1",
+    "size": 34675496,
+    "pages": 136,
+    "block_count": 0,
+    "extract_method": "IMAGE_ONLY"
+  },
+  {
+    "source_local_id": 3,
+    "name": "2017最新版：《土地利用现状分类》（GBT 21010-2017） (1)",
+    "kb_type": "NORM",
+    "filename": "2017最新版：《土地利用现状分类》（GBT 21010-2017） (1).pdf",
+    "abs_path": "/mnt/data/2017最新版：《土地利用现状分类》（GBT 21010-2017） (1).pdf",
+    "sha256": "a4078295b9bd59597b2d26e7741f527fce71ce99db3f4db11e5d8e081bf33d4f",
+    "size": 3433028,
+    "pages": 14,
+    "block_count": 0,
+    "extract_method": "IMAGE_ONLY"
+  },
+  {
+    "source_local_id": 4,
+    "name": "GB 51018-2014 水土保持工程设计规范 (2)",
+    "kb_type": "NORM",
+    "filename": "GB 51018-2014 水土保持工程设计规范 (2).pdf",
+    "abs_path": "/mnt/data/GB 51018-2014 水土保持工程设计规范 (2).pdf",
+    "sha256": "a12fbddaec24b9ea6480c3ab96a86fa7e2ad5b7ecef5e974447e0d7f44b9bfbb",
+    "size": 6618029,
+    "pages": 242,
+    "block_count": 942,
+    "extract_method": "TEXT"
+  },
+  {
+    "source_local_id": 5,
+    "name": "关于印发《生产建设项目水土保持方案技术审查要点》的通知（水保监〔2020〕63号）",
+    "kb_type": "NORM",
+    "filename": "关于印发《生产建设项目水土保持方案技术审查要点》的通知（水保监〔2020〕63号）.pdf",
+    "abs_path": "/mnt/data/关于印发《生产建设项目水土保持方案技术审查要点》的通知（水保监〔2020〕63号）.pdf",
+    "sha256": "a6ff129bdbe7f7097b961a4c169a468f25600ed5d0fa2e98a34c73fb095a41e8",
+    "size": 20575112,
+    "pages": 47,
+    "block_count": 0,
+    "extract_method": "IMAGE_ONLY"
+  },
+  {
+    "source_local_id": 6,
+    "name": "广东省水利水电工程设计估算编制规定",
+    "kb_type": "NORM",
+    "filename": "广东省水利水电工程设计估算编制规定.pdf",
+    "abs_path": "/mnt/data/广东省水利水电工程设计估算编制规定.pdf",
+    "sha256": "2b9180cb8c9b7ac53790457e831eb0858358679040ff8eb7d732748e890366a4",
+    "size": 1313106,
+    "pages": 228,
+    "block_count": 381,
+    "extract_method": "TEXT"
+  },
+  {
+    "source_local_id": 7,
+    "name": "广东省水土保持条例",
+    "kb_type": "NORM",
+    "filename": "广东省水土保持条例.pdf",
+    "abs_path": "/mnt/data/广东省水土保持条例.pdf",
+    "sha256": "9de93cffb27ac0740ea87b4e183af72b28fb8190eebb60d964c75bc762074718",
+    "size": 409464,
+    "pages": 9,
+    "block_count": 44,
+    "extract_method": "TEXT"
+  },
+  {
+    "source_local_id": 8,
+    "name": "生产建设项目水土保持方案管理办法（2023年1月17日水利部令第53号发布）",
+    "kb_type": "NORM",
+    "filename": "生产建设项目水土保持方案管理办法（2023年1月17日水利部令第53号发布）.pdf",
+    "abs_path": "/mnt/data/生产建设项目水土保持方案管理办法（2023年1月17日水利部令第53号发布）.pdf",
+    "sha256": "fe1e69279655f97c70dc3f873e4376176c0fbdcec297b9efc109e04c6c183e92",
+    "size": 1851135,
+    "pages": 4,
+    "block_count": 0,
+    "extract_method": "IMAGE_ONLY"
+  },
+  {
+    "source_local_id": 9,
+    "name": "生产建设项目水土保持技术文件编写和印制格式规定（办水保【2018】135号） (最新）",
+    "kb_type": "NORM",
+    "filename": "生产建设项目水土保持技术文件编写和印制格式规定（办水保【2018】135号） (最新）.pdf",
+    "abs_path": "/mnt/data/生产建设项目水土保持技术文件编写和印制格式规定（办水保【2018】135号） (最新）.pdf",
+    "sha256": "20514b14a958a3762e42c0ac7a0824821889632ba689652406a6b8c9822ccaf4",
+    "size": 1367854,
+    "pages": 13,
+    "block_count": 0,
+    "extract_method": "IMAGE_ONLY"
+  },
+  {
+    "source_local_id": 10,
+    "name": "生产建设项目水土流失防治标准（GB50433-2018）",
+    "kb_type": "NORM",
+    "filename": "生产建设项目水土流失防治标准（GB50433-2018）.pdf",
+    "abs_path": "/mnt/data/生产建设项目水土流失防治标准（GB50433-2018）.pdf",
+    "sha256": "6d9893d3f9a0bb6853d6b4e087d9810efff13d2c4466c3bf54e12b78ff7ae8cf",
+    "size": 4493560,
+    "pages": 28,
+    "block_count": 0,
+    "extract_method": "IMAGE_ONLY"
+  }
+]
