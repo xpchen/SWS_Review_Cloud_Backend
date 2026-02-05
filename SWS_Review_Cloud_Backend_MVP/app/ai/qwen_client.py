@@ -5,6 +5,10 @@ from ..settings import settings
 DASHSCOPE_BASE = "https://dashscope.aliyuncs.com/compatible-mode/v1"
 
 
+# 单次请求超时（秒），大文档+多规则时适当放宽
+CHAT_TIMEOUT = 120.0
+
+
 def chat_completion(messages: list[dict], model: str | None = None, response_format: dict | None = None) -> str:
     """Call Qwen chat API. Returns content string."""
     if not settings.QWEN_API_KEY:
@@ -13,7 +17,7 @@ def chat_completion(messages: list[dict], model: str | None = None, response_for
     body = {"model": model, "messages": messages}
     if response_format:
         body["response_format"] = response_format
-    with httpx.Client(timeout=60.0) as client:
+    with httpx.Client(timeout=CHAT_TIMEOUT) as client:
         r = client.post(
             f"{DASHSCOPE_BASE}/chat/completions",
             headers={"Authorization": f"Bearer {settings.QWEN_API_KEY}"},

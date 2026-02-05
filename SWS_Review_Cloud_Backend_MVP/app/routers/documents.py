@@ -23,7 +23,7 @@ def create_document(project_id: int, body: DocumentCreate, current_user: Annotat
 def list_documents(project_id: int, current_user: Annotated[dict, Depends(get_current_user)]):
     if not require_project_member(project_id, current_user):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not a project member")
-    rows = document_service.list_documents(project_id)
+    rows = document_service.list_documents_with_status(project_id)
     return ok_data(rows)
 
 

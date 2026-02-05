@@ -56,10 +56,11 @@ def insert_issue(
     evidence_quotes: list | None = None,
     anchor_rects: list | None = None,
     checkpoint_code: str | None = None,
+    review_type: str | None = None,
 ) -> int:
     import json
     from .block_service import get_block_page_info
-    
+
     # 如果page_no未提供，从evidence_block_ids的第一个block的anchor反查
     if page_no is None and evidence_block_ids:
         page_info = get_block_page_info(evidence_block_ids[:1])
@@ -68,39 +69,58 @@ def insert_issue(
             # 如果anchor_rects也未提供，从anchor获取
             if anchor_rects is None:
                 anchor_rects = page_info[evidence_block_ids[0]].get("anchor_rects")
-    
+
     # 如果还是没有page_no，默认设为1（向后兼容）
     if page_no is None:
         page_no = 1
-    
-    # checkpoint_code字段已通过迁移确保存在，直接使用
-    fields = [
+
+    # 基础字段（不含 review_type）；review_type 可选，若表中无该列则自动降级
+    fields_base = [
         "version_id", "run_id", "issue_type", "severity", "title", "description",
         "suggestion", "confidence", "status", "page_no",
-        "evidence_block_ids", "evidence_quotes", "anchor_rects", "checkpoint_code"
+        "evidence_block_ids", "evidence_quotes", "anchor_rects", "checkpoint_code",
     ]
-    values = [
+    values_base = [
         "%(version_id)s", "%(run_id)s", "%(issue_type)s", "%(severity)s",
         "%(title)s", "%(description)s", "%(suggestion)s", "%(confidence)s",
         "'NEW'", "%(page_no)s",
-        "%(evidence_block_ids)s", "%(evidence_quotes)s", "%(anchor_rects)s", "%(checkpoint_code)s"
+        "%(evidence_block_ids)s", "%(evidence_quotes)s", "%(anchor_rects)s", "%(checkpoint_code)s",
     ]
-    
-    sql = f"""
-    INSERT INTO {_schema}.review_issue ({', '.join(fields)})
-    VALUES ({', '.join(values)})
-    RETURNING id
-    """
+    params = {
+        "version_id": version_id, "run_id": run_id, "issue_type": issue_type,
+        "severity": severity, "title": title, "description": description,
+        "suggestion": suggestion, "confidence": confidence, "page_no": page_no,
+        "evidence_block_ids": json.dumps(evidence_block_ids or []),
+        "evidence_quotes": json.dumps(evidence_quotes or []),
+        "anchor_rects": json.dumps(anchor_rects or []),
+        "checkpoint_code": checkpoint_code,
+    }
+
     with db.pool.connection() as conn:
         with conn.cursor() as cur:
-            params = {
-                "version_id": version_id, "run_id": run_id, "issue_type": issue_type,
-                "severity": severity, "title": title, "description": description,
-                "suggestion": suggestion, "confidence": confidence, "page_no": page_no,
-                "evidence_block_ids": json.dumps(evidence_block_ids or []),
-                "evidence_quotes": json.dumps(evidence_quotes or []),
-                "anchor_rects": json.dumps(anchor_rects or []),
-                "checkpoint_code": checkpoint_code,
-            }
+            # 若传入 review_type，先尝试带 review_type 插入；列不存在或无权限时降级为不含 review_type
+            if review_type is not None:
+                fields = fields_base + ["review_type"]
+                values = values_base + ["%(review_type)s"]
+                params_with_rt = {**params, "review_type": review_type}
+                sql_with_rt = f"""
+                INSERT INTO {_schema}.review_issue ({', '.join(fields)})
+                VALUES ({', '.join(values)})
+                RETURNING id
+                """
+                try:
+                    cur.execute(sql_with_rt, params_with_rt)
+                    return cur.fetchone()[0]
+                except Exception as e:
+                    err = str(e).lower()
+                    if "review_type" in err or "column" in err or "属主" in err or "owner" in err or "permission" in err:
+                        pass  # 降级：不带 review_type 再插一次
+                    else:
+                        raise
+            sql = f"""
+            INSERT INTO {_schema}.review_issue ({', '.join(fields_base)})
+            VALUES ({', '.join(values_base)})
+            RETURNING id
+            """
             cur.execute(sql, params)
             return cur.fetchone()[0]

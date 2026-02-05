@@ -1,4 +1,6 @@
+import json
 import logging
+import time
 from celery import chain
 from .app import app
 from . import pipeline
@@ -8,6 +10,16 @@ from ..services.version_service import update_version_status
 
 _schema = settings.DB_SCHEMA
 logger = logging.getLogger(__name__)
+
+# #region agent log
+_DEBUG_LOG = r"d:\Workspace\HBuilderProjects\uni-report-gen-v2\.cursor\debug.log"
+def _agent_log(location, message, data, hypothesis_id):
+    try:
+        with open(_DEBUG_LOG, "a", encoding="utf-8") as f:
+            f.write(json.dumps({"location": location, "message": message, "data": data, "hypothesisId": hypothesis_id, "sessionId": "debug-session", "timestamp": int(time.time() * 1000)}, ensure_ascii=False) + "\n")
+    except Exception:
+        pass
+# #endregion
 
 
 def _fail_version(version_id: int, error_message: str) -> None:
@@ -20,11 +32,17 @@ def _fail_version(version_id: int, error_message: str) -> None:
 @app.task(bind=True, max_retries=2)
 def convert_docx_to_pdf_task(self, version_id: int):
     """任务1/7: DOCX转PDF"""
+    # #region agent log
+    _agent_log("tasks.py:convert_docx_to_pdf_task:entry", "convert_docx_to_pdf_task entered", {"version_id": version_id}, "H4")
+    # #endregion
     try:
         logger.info(f"[版本 {version_id}] 开始任务: DOCX转PDF")
         update_version_status(version_id, "PROCESSING", progress=10, current_step="DOCX转PDF")
         pipeline.convert_docx_to_pdf(version_id)
         logger.info(f"[版本 {version_id}] 完成任务: DOCX转PDF")
+        # #region agent log
+        _agent_log("tasks.py:convert_docx_to_pdf_task:exit", "convert_docx_to_pdf_task completed", {"version_id": version_id}, "H4")
+        # #endregion
         return version_id
     except Exception as e:
         logger.error(f"[版本 {version_id}] DOCX转PDF失败: {e}")
@@ -123,6 +141,9 @@ def finalize_ready_task(self, version_id: int):
 @app.task(bind=True)
 def pipeline_chain(self, version_id: int):
     """运行完整管道: convert -> parse -> extract -> align -> extract_facts -> build -> finalize."""
+    # #region agent log
+    _agent_log("tasks.py:pipeline_chain:entry", "pipeline_chain entered", {"version_id": version_id}, "H3")
+    # #endregion
     logger.info(f"[版本 {version_id}] 🚀 开始处理管道，共7个步骤")
     update_version_status(version_id, "PROCESSING", progress=0, current_step="初始化")
     s = chain(
@@ -134,4 +155,8 @@ def pipeline_chain(self, version_id: int):
         build_chunks_task.s(),
         finalize_ready_task.s(),
     )
-    return s.apply_async()
+    ar = s.apply_async()
+    # #region agent log
+    _agent_log("tasks.py:pipeline_chain:after_apply_async", "chain dispatched", {"version_id": version_id, "async_result_id": str(ar.id) if ar else None}, "H3")
+    # #endregion
+    return ar

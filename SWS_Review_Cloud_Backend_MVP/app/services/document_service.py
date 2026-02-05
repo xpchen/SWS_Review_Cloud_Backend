@@ -14,6 +14,37 @@ def list_documents(project_id: int) -> list[dict]:
     return db.fetch_all(sql, {"project_id": project_id})
 
 
+def list_documents_with_status(project_id: int) -> list[dict]:
+    """列表带最新版本状态、审查进度、问题条数，供前端展示处理进度/状态/结果。"""
+    sql = f"""
+    SELECT d.id, d.project_id, d.doc_type, d.title, d.current_version_id, d.created_at, d.updated_at,
+           dv.id AS version_id,
+           dv.status AS version_status,
+           dv.error_message AS version_error_message,
+           COALESCE(rr.progress, 0) AS run_progress,
+           rr.status AS run_status,
+           COALESCE(ic.issue_count, 0)::int AS issue_count
+    FROM {_schema}.document d
+    LEFT JOIN {_schema}.document_version dv ON dv.id = d.current_version_id
+    LEFT JOIN LATERAL (
+        SELECT id, version_id, status, progress
+        FROM {_schema}.review_run
+        WHERE version_id = dv.id
+        ORDER BY id DESC
+        LIMIT 1
+    ) rr ON rr.version_id = dv.id
+    LEFT JOIN LATERAL (
+        SELECT version_id, COUNT(*) AS issue_count
+        FROM {_schema}.review_issue
+        WHERE version_id = dv.id
+        GROUP BY version_id
+    ) ic ON ic.version_id = dv.id
+    WHERE d.project_id = %(project_id)s
+    ORDER BY d.id DESC
+    """
+    return db.fetch_all(sql, {"project_id": project_id})
+
+
 def create_document(project_id: int, title: str, doc_type: str = "SOIL_WATER_PLAN") -> int:
     sql = f"""
     INSERT INTO {_schema}.document (project_id, title, doc_type)

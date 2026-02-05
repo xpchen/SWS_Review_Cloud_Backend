@@ -9,7 +9,6 @@ from ..models.common import ok_data
 from ..models.review import ReviewRunCreate
 from ..services.review_run_service import create_review_run, get_review_run
 from ..core.deps import get_current_user, require_project_member, get_project_id_by_run_id
-from ..worker.review_tasks import run_rule_review_task
 from ..worker.ai_review_tasks import run_ai_review_task
 
 router = APIRouter(prefix="/api", tags=["review-runs"])
@@ -27,11 +26,9 @@ def create_run(
         raise HTTPException(status_code=404, detail="Version not found")
     if not require_project_member(project_id, current_user):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not a project member")
-    run_id = create_review_run(version_id, body.run_type)
-    if body.run_type in ("RULE", "MIXED"):
-        run_rule_review_task.delay(version_id, run_id)
-    if body.run_type in ("AI", "MIXED"):
-        run_ai_review_task.delay(version_id, run_id)
+    # 当前全部使用 AI 规则校验引擎，不再执行旧规则引擎
+    run_id = create_review_run(version_id, "AI")
+    run_ai_review_task.delay(version_id, run_id)
     run = get_review_run(run_id)
     return ok_data(run)
 

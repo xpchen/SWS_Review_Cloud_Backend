@@ -1,0 +1,5329 @@
+[
+  {
+    "rule_id": "CONS-001",
+    "name": "资质证号/水保证书编号跨页一致性",
+    "field_key": "qualification_cert_no",
+    "field_label": "资质证号/水保证书编号",
+    "extract_targets": [
+      {
+        "where": "cover",
+        "hints": [
+          "资质证号",
+          "水保证书编号",
+          "证书编号"
+        ]
+      },
+      {
+        "where": "title_page",
+        "hints": [
+          "资质证号",
+          "水保证书编号",
+          "证书编号"
+        ]
+      },
+      {
+        "where": "qualification_page",
+        "hints": [
+          "资质证书",
+          "证号",
+          "编号"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "fullwidth2halfwidth",
+      "remove_all_spaces",
+      "punct_unify",
+      "upper"
+    ],
+    "compare": {
+      "mode": "all_equal"
+    },
+    "severity": "high",
+    "priority": 90,
+    "source_priority": [
+      "qualification_page",
+      "cover",
+      "title_page",
+      "others"
+    ],
+    "message_tpl": "【一致性】{field_label}在{loc_a}与{loc_b}不一致：'{val_a}' vs '{val_b}'",
+    "fix_hint_tpl": "以{source_preferred}为准统一修改。推荐：{recommended_value}",
+    "review_type": "CONSISTENCY_VALUE_MISMATCH",
+    "category_code": "KEY_FIELD_INCONSISTENT"
+  },
+  {
+    "rule_id": "CONS-002",
+    "name": "扉页工程师级别禁用“中级”",
+    "field_key": "engineer_level_forbidden_mid",
+    "field_label": "工程师级别",
+    "extract_targets": [
+      {
+        "where": "title_page",
+        "hints": [
+          "工程师",
+          "项目负责人",
+          "审核",
+          "校核",
+          "职称"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "fullwidth2halfwidth"
+    ],
+    "compare": {
+      "mode": "forbidden_token",
+      "pattern": "中级"
+    },
+    "severity": "high",
+    "priority": 85,
+    "source_priority": [
+      "title_page"
+    ],
+    "message_tpl": "【禁用词】{field_label}在{loc}出现禁用词：'{hit}'",
+    "fix_hint_tpl": "删除或更正职称表述，确保不出现“中级”。",
+    "review_type": "BUSINESS_LOGIC_PROHIBITION_VIOLATION",
+    "category_code": "BUSINESS_LOGIC_PROHIBITION_VIOLATION"
+  },
+  {
+    "rule_id": "CONS-003",
+    "name": "报告出版日期跨位置一致性",
+    "field_key": "publish_date",
+    "field_label": "报告出版日期",
+    "extract_targets": [
+      {
+        "where": "cover",
+        "hints": [
+          "出版",
+          "日期",
+          "年",
+          "月",
+          "日"
+        ]
+      },
+      {
+        "where": "title_page",
+        "hints": [
+          "出版",
+          "日期",
+          "年",
+          "月",
+          "日"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "1.1.2",
+          "水土保持方案编制情况",
+          "编制情况"
+        ]
+      },
+      {
+        "where": "attachment",
+        "hints": [
+          "专家评审意见",
+          "技术审查意见"
+        ]
+      },
+      {
+        "where": "figure",
+        "hints": [
+          "附图",
+          "图",
+          "制图",
+          "日期"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "fullwidth2halfwidth",
+      "date_to_iso",
+      "remove_extra_spaces"
+    ],
+    "compare": {
+      "mode": "all_equal"
+    },
+    "severity": "medium",
+    "priority": 70,
+    "source_priority": [
+      "cover",
+      "title_page",
+      "section",
+      "attachment",
+      "figure",
+      "others"
+    ],
+    "message_tpl": "【一致性】{field_label}在{loc_a}与{loc_b}不一致：'{val_a}' vs '{val_b}'",
+    "fix_hint_tpl": "统一为同一出版日期（建议以封面/扉页为主）。推荐：{recommended_value}",
+    "review_type": "CONSISTENCY_VALUE_MISMATCH",
+    "category_code": "CONSISTENCY_VALUE_MISMATCH"
+  },
+  {
+    "rule_id": "CONS-004",
+    "name": "项目名称全书一致性",
+    "field_key": "project_name",
+    "field_label": "项目名称",
+    "extract_targets": [
+      {
+        "where": "cover",
+        "hints": [
+          "项目名称"
+        ]
+      },
+      {
+        "where": "title_page",
+        "hints": [
+          "项目名称"
+        ]
+      },
+      {
+        "where": "qualification_page",
+        "hints": [
+          "项目名称"
+        ]
+      },
+      {
+        "where": "responsibility_page",
+        "hints": [
+          "项目名称"
+        ]
+      },
+      {
+        "where": "task_sheet",
+        "hints": [
+          "任务单",
+          "项目名称"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "1",
+          "综合说明",
+          "方案特性表",
+          "项目概况"
+        ]
+      },
+      {
+        "where": "table",
+        "hints": [
+          "单价分析表",
+          "估算",
+          "表"
+        ]
+      },
+      {
+        "where": "attachment",
+        "hints": [
+          "委托书",
+          "备案证",
+          "工规证",
+          "施工许可"
+        ]
+      },
+      {
+        "where": "drawing",
+        "hints": [
+          "图纸",
+          "图名",
+          "标题栏",
+          "图框"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "fullwidth2halfwidth",
+      "remove_extra_spaces",
+      "punct_unify"
+    ],
+    "compare": {
+      "mode": "fuzzy_equal",
+      "threshold": 0.98
+    },
+    "severity": "high",
+    "priority": 95,
+    "source_priority": [
+      "attachment",
+      "cover",
+      "title_page",
+      "task_sheet",
+      "main_text",
+      "tables",
+      "drawings",
+      "others"
+    ],
+    "message_tpl": "【一致性】{field_label}不一致：{loc_a}='{val_a}' vs {loc_b}='{val_b}'",
+    "fix_hint_tpl": "以证照/备案类附件或封面项目名称为准统一全书。推荐：{recommended_value}",
+    "review_type": "CONSISTENCY_TEXT_MISMATCH",
+    "category_code": "KEY_FIELD_INCONSISTENT"
+  },
+  {
+    "rule_id": "CONS-005",
+    "name": "建设单位全书一致性",
+    "field_key": "owner_unit",
+    "field_label": "建设单位",
+    "extract_targets": [
+      {
+        "where": "cover",
+        "hints": [
+          "建设单位"
+        ]
+      },
+      {
+        "where": "title_page",
+        "hints": [
+          "建设单位"
+        ]
+      },
+      {
+        "where": "task_sheet",
+        "hints": [
+          "任务单",
+          "建设单位"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "1",
+          "综合说明",
+          "项目基本情况",
+          "方案特性表"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "2",
+          "项目概况",
+          "项目基本情况",
+          "主要特性表"
+        ]
+      },
+      {
+        "where": "attachment",
+        "hints": [
+          "附件",
+          "建设单位"
+        ]
+      },
+      {
+        "where": "drawing",
+        "hints": [
+          "图纸",
+          "建设单位",
+          "标题栏"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "fullwidth2halfwidth",
+      "remove_extra_spaces",
+      "punct_unify",
+      "company_suffix_unify"
+    ],
+    "compare": {
+      "mode": "fuzzy_equal",
+      "threshold": 0.98
+    },
+    "severity": "high",
+    "priority": 90,
+    "source_priority": [
+      "attachment",
+      "cover",
+      "title_page",
+      "task_sheet",
+      "main_text",
+      "others"
+    ],
+    "message_tpl": "【一致性】{field_label}不一致：{loc_a}='{val_a}' vs {loc_b}='{val_b}'",
+    "fix_hint_tpl": "以证照/备案类附件或封面为准统一。推荐：{recommended_value}",
+    "review_type": "CONSISTENCY_TEXT_MISMATCH",
+    "category_code": "KEY_FIELD_INCONSISTENT"
+  },
+  {
+    "rule_id": "CONS-006",
+    "name": "方案编制单位全书一致性",
+    "field_key": "compiler_unit",
+    "field_label": "方案编制单位",
+    "extract_targets": [
+      {
+        "where": "cover",
+        "hints": [
+          "编制单位",
+          "方案编制单位"
+        ]
+      },
+      {
+        "where": "title_page",
+        "hints": [
+          "编制单位",
+          "方案编制单位"
+        ]
+      },
+      {
+        "where": "task_sheet",
+        "hints": [
+          "任务单",
+          "编制单位"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "1",
+          "综合说明",
+          "水土保持方案编制情况",
+          "特性表"
+        ]
+      },
+      {
+        "where": "footer",
+        "hints": [
+          "编制单位",
+          "公司名称"
+        ]
+      },
+      {
+        "where": "attachment",
+        "hints": [
+          "附件",
+          "编制单位"
+        ]
+      },
+      {
+        "where": "drawing",
+        "hints": [
+          "图纸",
+          "编制单位",
+          "标题栏"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "fullwidth2halfwidth",
+      "remove_extra_spaces",
+      "punct_unify",
+      "company_suffix_unify"
+    ],
+    "compare": {
+      "mode": "fuzzy_equal",
+      "threshold": 0.98
+    },
+    "severity": "high",
+    "priority": 85,
+    "source_priority": [
+      "qualification_page",
+      "cover",
+      "title_page",
+      "task_sheet",
+      "footer",
+      "drawings",
+      "others"
+    ],
+    "message_tpl": "【一致性】{field_label}不一致：{loc_a}='{val_a}' vs {loc_b}='{val_b}'",
+    "fix_hint_tpl": "以资质页/封面为准统一，页脚也需同步。推荐：{recommended_value}",
+    "review_type": "CONSISTENCY_TEXT_MISMATCH",
+    "category_code": "KEY_FIELD_INCONSISTENT"
+  },
+  {
+    "rule_id": "CONS-007",
+    "name": "行政区划及报送水行政主管部门一致性",
+    "field_key": "admin_region_and_authority",
+    "field_label": "行政区划/报送水行政主管部门",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "1",
+          "综合说明",
+          "必要性",
+          "项目基本情况",
+          "前期工作",
+          "自然简况",
+          "防治目标",
+          "评价结论",
+          "监测",
+          "特性表"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "2",
+          "项目概况",
+          "自然概况",
+          "占地",
+          "特性表"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "3",
+          "项目水土保持评价"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "4",
+          "水土流失现状"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "6",
+          "水土保持监测",
+          "报送"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "7",
+          "投资估算"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "8",
+          "水土保持管理",
+          "报送"
+        ]
+      },
+      {
+        "where": "attachment",
+        "hints": [
+          "附件",
+          "报送",
+          "主管部门"
+        ]
+      },
+      {
+        "where": "drawing",
+        "hints": [
+          "图纸",
+          "主管部门",
+          "报送"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "fullwidth2halfwidth",
+      "remove_extra_spaces",
+      "punct_unify"
+    ],
+    "compare": {
+      "mode": "fuzzy_equal",
+      "threshold": 0.97
+    },
+    "severity": "high",
+    "priority": 80,
+    "source_priority": [
+      "main_text",
+      "attachments",
+      "tables",
+      "drawings",
+      "others"
+    ],
+    "message_tpl": "【一致性】{field_label}在{loc_a}与{loc_b}不一致：'{val_a}' vs '{val_b}'",
+    "fix_hint_tpl": "统一行政区划全称与主管部门全称（含层级/地区），并同步到附件与图纸。推荐：{recommended_value}",
+    "review_type": "CONSISTENCY_TEXT_MISMATCH",
+    "category_code": "CONSISTENCY_TEXT_MISMATCH"
+  },
+  {
+    "rule_id": "CONS-008",
+    "name": "建设地点/地理位置一致性",
+    "field_key": "location",
+    "field_label": "建设地点/地理位置",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "1.1.1",
+          "项目基本情况",
+          "地理位置"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "1.1.3",
+          "自然简况"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "1.5",
+          "执行标准等级"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "1.11",
+          "方案特性表"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "2.1",
+          "项目基本情况"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "2.7",
+          "自然概况"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "3.1",
+          "选址",
+          "水土保持评价"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "3.2",
+          "布局",
+          "水土保持评价"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "4.1",
+          "水土流失现状"
+        ]
+      },
+      {
+        "where": "table",
+        "hints": [
+          "类比工程",
+          "可行性对照表"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "fullwidth2halfwidth",
+      "remove_extra_spaces",
+      "punct_unify",
+      "address_noise_remove"
+    ],
+    "compare": {
+      "mode": "fuzzy_equal",
+      "threshold": 0.97
+    },
+    "severity": "high",
+    "priority": 85,
+    "source_priority": [
+      "attachments",
+      "main_text",
+      "tables",
+      "others"
+    ],
+    "message_tpl": "【一致性】{field_label}不一致：{loc_a}='{val_a}' vs {loc_b}='{val_b}'",
+    "fix_hint_tpl": "统一到完整地址（含市/区/镇/道路/门牌/单位名称），建议以证照/附件或项目基本情况为准。推荐：{recommended_value}",
+    "review_type": "CONSISTENCY_TEXT_MISMATCH",
+    "category_code": "CONSISTENCY_TEXT_MISMATCH"
+  },
+  {
+    "rule_id": "CONS-009",
+    "name": "建设规模/建设内容一致性",
+    "field_key": "scale_and_content",
+    "field_label": "建设规模/建设内容",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "1",
+          "综合说明",
+          "项目基本情况",
+          "特性表"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "2",
+          "项目概况",
+          "项目基本情况",
+          "主要特性表",
+          "经济技术指标",
+          "项目组成"
+        ]
+      },
+      {
+        "where": "figure",
+        "hints": [
+          "总平图",
+          "布置图",
+          "平面图"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "fullwidth2halfwidth",
+      "remove_extra_spaces",
+      "punct_unify",
+      "number_unit_unify"
+    ],
+    "compare": {
+      "mode": "fuzzy_equal",
+      "threshold": 0.95
+    },
+    "severity": "high",
+    "priority": 75,
+    "source_priority": [
+      "main_text",
+      "figures",
+      "tables",
+      "others"
+    ],
+    "message_tpl": "【一致性】{field_label}描述不一致：{loc_a} vs {loc_b}",
+    "fix_hint_tpl": "统一“规模口径”（建筑面积/层数/栋数/用途等）并同步到特性表与总平图注记。",
+    "review_type": "CONSISTENCY_TEXT_MISMATCH",
+    "category_code": "CONSISTENCY_TEXT_MISMATCH"
+  },
+  {
+    "rule_id": "CONS-010",
+    "name": "占地面积/防治责任范围一致性",
+    "field_key": "land_area_and_responsibility_area",
+    "field_label": "占地面积/防治责任范围面积",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "1.1.1",
+          "项目基本情况",
+          "占地"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "1.4",
+          "防治责任范围"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "1.7",
+          "预测",
+          "调查结果"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "1.9",
+          "监测",
+          "监测范围"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "1.10",
+          "效益成果分析"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "2",
+          "主要特性表",
+          "占地"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "2.3",
+          "工程占地"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "4",
+          "分析与预测",
+          "占地"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "5.1",
+          "防治分区"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "6.1",
+          "监测范围"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "7.2",
+          "效益分析"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "8.3",
+          "监测"
+        ]
+      },
+      {
+        "where": "drawing",
+        "hints": [
+          "图纸",
+          "责任范围",
+          "占地"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "fullwidth2halfwidth",
+      "number_unit_to_hm2",
+      "remove_extra_spaces"
+    ],
+    "compare": {
+      "mode": "numeric_equal",
+      "tolerance": 0.01,
+      "unit": "hm2"
+    },
+    "severity": "high",
+    "priority": 95,
+    "source_priority": [
+      "main_text",
+      "tables",
+      "drawings",
+      "others"
+    ],
+    "message_tpl": "【一致性】{field_label}数值不一致：{loc_a}={val_a}{unit} vs {loc_b}={val_b}{unit}",
+    "fix_hint_tpl": "统一占地/责任范围口径（永久/临时/合计），并同步到预测、监测、效益与图纸。推荐：{recommended_value}{unit}",
+    "review_type": "CONSISTENCY_VALUE_MISMATCH",
+    "category_code": "CONSISTENCY_VALUE_MISMATCH"
+  },
+  {
+    "rule_id": "CONS-011",
+    "name": "土石方平衡与去向一致性",
+    "field_key": "earthwork_balance",
+    "field_label": "土石方（挖/填/借/弃、来源、去向）",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "1.1.1",
+          "项目基本情况",
+          "土石方"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "1.7",
+          "预测",
+          "土石方"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "1.11",
+          "方案特性表",
+          "土石方"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "2",
+          "主要特性表",
+          "弃土处置"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "2.4",
+          "土石方平衡",
+          "平衡表",
+          "流向框图"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "3.2.3",
+          "土石方平衡评价"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "4",
+          "分析与预测",
+          "土石方"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "7.2",
+          "效益分析",
+          "渣土防护率"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "8.3",
+          "监测"
+        ]
+      },
+      {
+        "where": "attachment",
+        "hints": [
+          "弃土",
+          "弃渣协议",
+          "借方来源"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "fullwidth2halfwidth",
+      "number_unit_to_m3",
+      "remove_extra_spaces",
+      "punct_unify"
+    ],
+    "compare": {
+      "mode": "numeric_equal",
+      "tolerance": 1.0,
+      "unit": "m3"
+    },
+    "severity": "high",
+    "priority": 90,
+    "source_priority": [
+      "main_text",
+      "tables",
+      "attachments",
+      "others"
+    ],
+    "message_tpl": "【一致性】{field_label}不一致：{loc_a} vs {loc_b}",
+    "fix_hint_tpl": "统一平衡表与文字描述口径（挖/填/借/弃及来源去向），并同步到预测与效益指标引用。",
+    "review_type": "CONSISTENCY_VALUE_MISMATCH",
+    "category_code": "CONSISTENCY_VALUE_MISMATCH"
+  },
+  {
+    "rule_id": "CONS-012",
+    "name": "项目总投资/土建投资一致性",
+    "field_key": "investment_and_fund_source",
+    "field_label": "项目总投资/土建投资",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "1.1.1",
+          "项目基本情况",
+          "总投资",
+          "土建投资"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "1.11",
+          "方案特性表",
+          "总投资",
+          "土建投资"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "2",
+          "项目简况",
+          "主要特性表",
+          "总投资"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "7",
+          "监测费",
+          "投资",
+          "估算"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "fullwidth2halfwidth",
+      "number_unit_to_wanyuan",
+      "remove_extra_spaces"
+    ],
+    "compare": {
+      "mode": "numeric_equal",
+      "tolerance": 0.01,
+      "unit": "万元"
+    },
+    "severity": "high",
+    "priority": 85,
+    "source_priority": [
+      "attachment",
+      "main_text",
+      "tables",
+      "others"
+    ],
+    "message_tpl": "【一致性】{field_label}不一致：{loc_a}={val_a}{unit} vs {loc_b}={val_b}{unit}",
+    "fix_hint_tpl": "以立项/备案/批复口径为准统一到正文、特性表与估算章节。推荐：{recommended_value}{unit}",
+    "review_type": "CONSISTENCY_VALUE_MISMATCH",
+    "category_code": "CONSISTENCY_VALUE_MISMATCH"
+  },
+  {
+    "rule_id": "CONS-013",
+    "name": "工期（开工/完工/设计水平年）一致性",
+    "field_key": "schedule",
+    "field_label": "开工/完工时间/设计水平年",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "1.1.1",
+          "项目基本情况",
+          "工期",
+          "开工",
+          "完工"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "1.3",
+          "设计水平年"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "1.9",
+          "监测方案",
+          "监测时段"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "1.11",
+          "方案特性表",
+          "开工",
+          "完工",
+          "水平年"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "2",
+          "项目简况",
+          "主要特性表",
+          "施工进度"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "2.6",
+          "施工进度",
+          "进度表"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "4",
+          "预测时段"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "5",
+          "施工进度安排"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "6",
+          "监测时段"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "fullwidth2halfwidth",
+      "date_to_iso",
+      "remove_extra_spaces"
+    ],
+    "compare": {
+      "mode": "all_equal"
+    },
+    "severity": "high",
+    "priority": 95,
+    "source_priority": [
+      "attachment",
+      "main_text",
+      "tables",
+      "others"
+    ],
+    "message_tpl": "【一致性】{field_label}不一致：{loc_a}='{val_a}' vs {loc_b}='{val_b}'",
+    "fix_hint_tpl": "以备案证/施工许可等证照时间为准统一，必要时补充“调整原因说明”。推荐：{recommended_value}",
+    "review_type": "CONSISTENCY_VALUE_MISMATCH",
+    "category_code": "CONSISTENCY_VALUE_MISMATCH"
+  },
+  {
+    "rule_id": "CONS-014",
+    "name": "前期工作进展资料一致性",
+    "field_key": "progress_docs",
+    "field_label": "前期工作进展（主体设计/立项等资料）",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "1.1.2",
+          "项目前期工作进展"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "1.2",
+          "编制依据",
+          "技术资料"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "2.7.2",
+          "地质",
+          "勘察报告"
+        ]
+      },
+      {
+        "where": "attachment",
+        "hints": [
+          "附件",
+          "立项",
+          "备案",
+          "设计",
+          "勘察"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "fullwidth2halfwidth",
+      "remove_extra_spaces",
+      "punct_unify"
+    ],
+    "compare": {
+      "mode": "fuzzy_equal",
+      "threshold": 0.93
+    },
+    "severity": "medium",
+    "priority": 60,
+    "source_priority": [
+      "attachment",
+      "main_text",
+      "others"
+    ],
+    "message_tpl": "【一致性】{field_label}引用不一致：{loc_a} vs {loc_b}",
+    "fix_hint_tpl": "统一资料名称、编制单位、日期，并确保附件可追溯。",
+    "review_type": "CONSISTENCY_TEXT_MISMATCH",
+    "category_code": "CONSISTENCY_TEXT_MISMATCH"
+  },
+  {
+    "rule_id": "CONS-015",
+    "name": "方案编制情况时间/单位与附件对应",
+    "field_key": "plan_compilation_timeline",
+    "field_label": "委托时间/评审时间/评审单位",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "1.1.2",
+          "水土保持方案编制情况",
+          "委托",
+          "评审"
+        ]
+      },
+      {
+        "where": "attachment",
+        "hints": [
+          "委托书"
+        ]
+      },
+      {
+        "where": "attachment",
+        "hints": [
+          "任务单",
+          "建设和编制单位",
+          "技术审查单位"
+        ]
+      },
+      {
+        "where": "attachment",
+        "hints": [
+          "签到表",
+          "会议签到表"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "fullwidth2halfwidth",
+      "date_to_iso",
+      "remove_extra_spaces"
+    ],
+    "compare": {
+      "mode": "fuzzy_equal",
+      "threshold": 0.95
+    },
+    "severity": "high",
+    "priority": 75,
+    "source_priority": [
+      "attachments",
+      "main_text",
+      "others"
+    ],
+    "message_tpl": "【一致性】{field_label}与附件不对应：{loc_a} vs {loc_b}",
+    "fix_hint_tpl": "以委托书/签到表/任务单原件信息为准回填正文，并确保日期链条闭合（委托≤评审≤成稿）。",
+    "review_type": "CONSISTENCY_TEXT_MISMATCH",
+    "category_code": "CONSISTENCY_TEXT_MISMATCH"
+  },
+  {
+    "rule_id": "CONS-016",
+    "name": "自然概况一致性与类比工程呼应",
+    "field_key": "natural_overview",
+    "field_label": "自然概况（地形地貌/气象/水文/土壤/植被）",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "1.1.3",
+          "自然概况"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "1.11",
+          "方案特性表",
+          "自然概况"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "2.7",
+          "自然概况"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "4.3.3",
+          "类比工程"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "fullwidth2halfwidth",
+      "remove_extra_spaces",
+      "unit_unify"
+    ],
+    "compare": {
+      "mode": "fuzzy_equal",
+      "threshold": 0.9
+    },
+    "severity": "medium",
+    "priority": 55,
+    "source_priority": [
+      "main_text",
+      "tables",
+      "others"
+    ],
+    "message_tpl": "【一致性】{field_label}关键指标/表述不一致：{loc_a} vs {loc_b}",
+    "fix_hint_tpl": "确保自然指标（降雨、侵蚀模数、容许流失量等）在正文、特性表与类比工程引用口径一致。",
+    "review_type": "CONSISTENCY_TEXT_MISMATCH",
+    "category_code": "CONSISTENCY_TEXT_MISMATCH"
+  },
+  {
+    "rule_id": "CONS-017",
+    "name": "设计水平年合理性与工期闭合",
+    "field_key": "design_year",
+    "field_label": "设计水平年",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "1.3",
+          "设计水平年"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "1.1.1",
+          "项目基本情况",
+          "开工",
+          "完工"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "1.11",
+          "方案特性表",
+          "水平年"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "fullwidth2halfwidth",
+      "date_to_iso"
+    ],
+    "compare": {
+      "mode": "all_equal"
+    },
+    "severity": "medium",
+    "priority": 65,
+    "source_priority": [
+      "main_text",
+      "tables",
+      "others"
+    ],
+    "message_tpl": "【一致性】{field_label}与工期/特性表不一致：{loc_a}='{val_a}' vs {loc_b}='{val_b}'",
+    "fix_hint_tpl": "设计水平年通常应与完工/验收阶段匹配，统一后同步到预测/监测时段引用。",
+    "review_type": "CONSISTENCY_VALUE_MISMATCH",
+    "category_code": "CONSISTENCY_VALUE_MISMATCH"
+  },
+  {
+    "rule_id": "CONS-018",
+    "name": "执行标准等级与六项指标一致性",
+    "field_key": "prevention_target_and_standard",
+    "field_label": "防治标准等级/重点区/六项指标",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "1.5",
+          "水土流失防治目标",
+          "标准等级",
+          "六项指标"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "1.10",
+          "效益分析成果",
+          "目标实现值"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "1.11",
+          "方案特性表",
+          "防治目标"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "3",
+          "项目水土保持评价",
+          "标准等级"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "7.2.2",
+          "防治效果分析",
+          "六项指标"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "fullwidth2halfwidth",
+      "remove_extra_spaces",
+      "punct_unify",
+      "percent_unify"
+    ],
+    "compare": {
+      "mode": "fuzzy_equal",
+      "threshold": 0.95
+    },
+    "severity": "high",
+    "priority": 80,
+    "source_priority": [
+      "main_text",
+      "tables",
+      "others"
+    ],
+    "message_tpl": "【一致性】{field_label}不一致：{loc_a} vs {loc_b}",
+    "fix_hint_tpl": "统一标准等级判定依据（地理位置/重点区/项目类型）与六项指标目标值，并同步到特性表和效果分析。",
+    "review_type": "CONSISTENCY_TEXT_MISMATCH",
+    "category_code": "CONSISTENCY_TEXT_MISMATCH"
+  },
+  {
+    "rule_id": "CONS-019",
+    "name": "水土保持评价结论与第3章一致性",
+    "field_key": "evaluation_conclusion",
+    "field_label": "水土保持评价结论",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "1.6",
+          "水土保持评价结论"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "3",
+          "项目水土保持评价"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "fullwidth2halfwidth",
+      "remove_extra_spaces",
+      "punct_unify"
+    ],
+    "compare": {
+      "mode": "fuzzy_equal",
+      "threshold": 0.92
+    },
+    "severity": "medium",
+    "priority": 60,
+    "source_priority": [
+      "section",
+      "others"
+    ],
+    "message_tpl": "【一致性】{field_label}与评价章节结论不一致：{loc_a} vs {loc_b}",
+    "fix_hint_tpl": "综合说明结论应是第3章评价的摘要，保持表述与结论点一致（不新增、不遗漏）。",
+    "review_type": "CONSISTENCY_TEXT_MISMATCH",
+    "category_code": "CONSISTENCY_TEXT_MISMATCH"
+  },
+  {
+    "rule_id": "CONS-020",
+    "name": "水土流失预测关键结果一致性",
+    "field_key": "erosion_prediction_result",
+    "field_label": "水土流失预测关键结果",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "1.7",
+          "水土流失预测",
+          "调查结果",
+          "损毁植被",
+          "流失量"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "1.10",
+          "效益分析成果",
+          "土壤流失量"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "1.11",
+          "方案特性表",
+          "土壤流失量"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "4",
+          "水土流失分析与预测",
+          "预测结论"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "7.2.1.1",
+          "水土流失影响控制",
+          "土壤流失量"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "fullwidth2halfwidth",
+      "number_unit_unify",
+      "remove_extra_spaces"
+    ],
+    "compare": {
+      "mode": "fuzzy_equal",
+      "threshold": 0.93
+    },
+    "severity": "high",
+    "priority": 85,
+    "source_priority": [
+      "section",
+      "tables",
+      "others"
+    ],
+    "message_tpl": "【一致性】{field_label}不一致：{loc_a} vs {loc_b}",
+    "fix_hint_tpl": "统一预测结果口径（时段/单位/范围），保证摘要与第4章结论、特性表、效益分析引用一致。",
+    "review_type": "CONSISTENCY_VALUE_MISMATCH",
+    "category_code": "CONSISTENCY_VALUE_MISMATCH"
+  },
+  {
+    "rule_id": "CONS-021",
+    "name": "防治分区名称与面积一致性",
+    "field_key": "prevention_zoning",
+    "field_label": "防治分区及面积",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "1.11",
+          "方案特性表",
+          "防治分区"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "2",
+          "主要特性表",
+          "防治分区"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "3.2.5",
+          "水保措施分析与评价表",
+          "分区"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "4",
+          "预测",
+          "分区"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "5.1",
+          "防治区划分"
+        ]
+      },
+      {
+        "where": "drawing",
+        "hints": [
+          "图纸",
+          "分区",
+          "区划"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "fullwidth2halfwidth",
+      "remove_extra_spaces",
+      "number_unit_to_hm2"
+    ],
+    "compare": {
+      "mode": "fuzzy_equal",
+      "threshold": 0.95
+    },
+    "severity": "high",
+    "priority": 80,
+    "source_priority": [
+      "section",
+      "tables",
+      "drawings",
+      "others"
+    ],
+    "message_tpl": "【一致性】{field_label}不一致：{loc_a} vs {loc_b}",
+    "fix_hint_tpl": "统一分区命名与面积（避免主体区/施工区/临时区混用），并同步到区划图与相关表。",
+    "review_type": "CONSISTENCY_TEXT_MISMATCH",
+    "category_code": "CONSISTENCY_TEXT_MISMATCH"
+  },
+  {
+    "rule_id": "CONS-022",
+    "name": "措施布设工程量与位置一致性",
+    "field_key": "measures_quantities",
+    "field_label": "措施布设工程量/位置",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "1.6.2",
+          "建设方案与布局评价",
+          "措施界定"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "1.8",
+          "水土保持措施布设结果"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "1.11",
+          "方案特性表",
+          "措施"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "3.2.5",
+          "措施分析与评价表"
+        ]
+      },
+      {
+        "where": "table",
+        "hints": [
+          "3.3",
+          "工程量及投资汇总表"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "5.2",
+          "措施总体布局",
+          "体系表",
+          "框图",
+          "分区措施布设"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "5",
+          "施工进度安排"
+        ]
+      },
+      {
+        "where": "figure",
+        "hints": [
+          "附图",
+          "措施布设",
+          "平面布置"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "fullwidth2halfwidth",
+      "number_unit_unify",
+      "remove_extra_spaces"
+    ],
+    "compare": {
+      "mode": "fuzzy_equal",
+      "threshold": 0.92
+    },
+    "severity": "high",
+    "priority": 85,
+    "source_priority": [
+      "tables",
+      "main_text",
+      "figures",
+      "others"
+    ],
+    "message_tpl": "【一致性】{field_label}不一致：{loc_a} vs {loc_b}",
+    "fix_hint_tpl": "以工程量汇总表为主校核，确保正文、体系表、框图、附图与进度安排引用一致。",
+    "review_type": "CONSISTENCY_TEXT_MISMATCH",
+    "category_code": "CONSISTENCY_TEXT_MISMATCH"
+  },
+  {
+    "rule_id": "CONS-023",
+    "name": "监测方案（范围/时间/点位/数量）一致性",
+    "field_key": "monitoring_plan",
+    "field_label": "监测范围/时间/监测点数量与位置",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "1.9",
+          "水土保持监测方案",
+          "监测范围",
+          "监测点"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "6",
+          "水土保持监测",
+          "点位布设",
+          "频次",
+          "方法"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "8.3",
+          "水土保持监测"
+        ]
+      },
+      {
+        "where": "figure",
+        "hints": [
+          "附图",
+          "监测点",
+          "点位"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "fullwidth2halfwidth",
+      "date_to_iso",
+      "number_unit_unify",
+      "remove_extra_spaces"
+    ],
+    "compare": {
+      "mode": "fuzzy_equal",
+      "threshold": 0.95
+    },
+    "severity": "high",
+    "priority": 90,
+    "source_priority": [
+      "section",
+      "tables",
+      "figures",
+      "others"
+    ],
+    "message_tpl": "【一致性】{field_label}不一致：{loc_a} vs {loc_b}",
+    "fix_hint_tpl": "统一监测范围（hm²）、监测时段、点位数量及编号，并同步到点位表与附图标注。",
+    "review_type": "CONSISTENCY_TEXT_MISMATCH",
+    "category_code": "CONSISTENCY_TEXT_MISMATCH"
+  },
+  {
+    "rule_id": "CONS-024",
+    "name": "投资估算与效益分析结果一致性",
+    "field_key": "investment_benefit",
+    "field_label": "水土保持投资估算/效益分析",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "1.10",
+          "投资及效益分析成果"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "1.11",
+          "方案特性表",
+          "投资"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "7.1.2.2",
+          "估算成果",
+          "文字",
+          "表格"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "7.2",
+          "效益分析"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "fullwidth2halfwidth",
+      "number_unit_to_wanyuan",
+      "remove_extra_spaces"
+    ],
+    "compare": {
+      "mode": "fuzzy_equal",
+      "threshold": 0.95
+    },
+    "severity": "high",
+    "priority": 85,
+    "source_priority": [
+      "tables",
+      "main_text",
+      "others"
+    ],
+    "message_tpl": "【一致性】{field_label}不一致：{loc_a} vs {loc_b}",
+    "fix_hint_tpl": "以第7章估算表为主校核，摘要/特性表/效益分析均引用同一套最终数字。",
+    "review_type": "CONSISTENCY_VALUE_MISMATCH",
+    "category_code": "CONSISTENCY_VALUE_MISMATCH"
+  },
+  {
+    "rule_id": "CONS-025",
+    "name": "文档完整性（目录/附表/附件/附图/编号/页眉页脚）一致性",
+    "field_key": "doc_integrity_and_catalog",
+    "field_label": "目录与附表/附件/附图/编号/页眉页脚",
+    "extract_targets": [
+      {
+        "where": "toc",
+        "hints": [
+          "目录"
+        ]
+      },
+      {
+        "where": "attachment",
+        "hints": [
+          "附件",
+          "附件目录"
+        ]
+      },
+      {
+        "where": "figure",
+        "hints": [
+          "附图",
+          "图号",
+          "图名"
+        ]
+      },
+      {
+        "where": "table",
+        "hints": [
+          "表",
+          "表号",
+          "表名"
+        ]
+      },
+      {
+        "where": "drawing",
+        "hints": [
+          "图纸",
+          "图号",
+          "标题栏",
+          "图框"
+        ]
+      },
+      {
+        "where": "header",
+        "hints": [
+          "页眉"
+        ]
+      },
+      {
+        "where": "footer",
+        "hints": [
+          "页脚"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "fullwidth2halfwidth",
+      "remove_extra_spaces",
+      "punct_unify"
+    ],
+    "compare": {
+      "mode": "catalog_match"
+    },
+    "severity": "medium",
+    "priority": 65,
+    "source_priority": [
+      "toc",
+      "main_text",
+      "others"
+    ],
+    "message_tpl": "【完整性/对应】{field_label}存在不对应或编号不连续：{detail}",
+    "fix_hint_tpl": "保证目录条目与实际附表/附件/附图一致；表、图编号连续；页眉页脚与章节匹配；图框样式用最新模板。",
+    "review_type": "FORMAT",
+    "category_code": "FORMAT_REVIEW"
+  },
+  {
+    "rule_id": "CONS-026",
+    "name": "中文标签后缺少分隔符（冒号/空格）",
+    "review_type": "FORMAT",
+    "category_code": "FORMAT_REVIEW",
+    "field_key": "label_missing_separator",
+    "field_label": "标签分隔符",
+    "extract_targets": [
+      {
+        "where": "attachment",
+        "hints": [
+          "发证机关",
+          "建设单位",
+          "编制单位",
+          "日期",
+          "联系人",
+          "电话"
+        ]
+      },
+      {
+        "where": "cover",
+        "hints": [
+          "建设单位",
+          "编制单位",
+          "日期"
+        ]
+      },
+      {
+        "where": "title_page",
+        "hints": [
+          "建设单位",
+          "编制单位",
+          "日期"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "fullwidth2halfwidth"
+    ],
+    "compare": {
+      "mode": "regex_not_match",
+      "pattern": "^(发证机关|建设单位|编制单位|日期|联系人|电话)[：:\\s].+"
+    },
+    "severity": "low",
+    "priority": 40,
+    "source_priority": [
+      "attachment",
+      "cover",
+      "title_page"
+    ],
+    "message_tpl": "【格式】标签后缺少分隔符：'{line}'",
+    "fix_hint_tpl": "建议改为“{label}：{value}”或“{label} {value}”。"
+  },
+  {
+    "rule_id": "CONS-027",
+    "name": "日期字段出现不规范空格（如“日 期”“2023年 11 月 15 日”）",
+    "review_type": "FORMAT",
+    "category_code": "FORMAT_REVIEW",
+    "field_key": "date_spacing",
+    "field_label": "日期格式",
+    "extract_targets": [
+      {
+        "where": "attachment",
+        "hints": [
+          "日期",
+          "日 期"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "日期"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "fullwidth2halfwidth"
+    ],
+    "compare": {
+      "mode": "regex_match",
+      "pattern": "(日\\s+期|\\d{4}年\\s+\\d{1,2}\\s*月\\s+\\d{1,2}\\s*日)"
+    },
+    "severity": "low",
+    "priority": 35,
+    "message_tpl": "【格式】日期包含多余空格：'{hit}'",
+    "fix_hint_tpl": "统一为“日期：YYYY年MM月DD日”（年/月/日间不留空格）。"
+  },
+  {
+    "rule_id": "CONS-028",
+    "name": "单位括号内出现多余空格（t/( km²·a)）",
+    "review_type": "FORMAT",
+    "category_code": "UNIT_INCONSISTENT",
+    "field_key": "unit_parenthesis_space",
+    "field_label": "单位括号空格",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "t/(",
+          "km²",
+          "·a",
+          "a)"
+        ]
+      },
+      {
+        "where": "table",
+        "hints": [
+          "t/(",
+          "km²",
+          "·a",
+          "a)"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "fullwidth2halfwidth"
+    ],
+    "compare": {
+      "mode": "regex_match",
+      "pattern": "t/\\(\\s+km²"
+    },
+    "severity": "low",
+    "priority": 30,
+    "message_tpl": "【格式】单位括号内存在多余空格：'{hit}'",
+    "fix_hint_tpl": "统一为“t/(km²·a)”（括号内不留空格）。"
+  },
+  {
+    "rule_id": "CONS-029",
+    "name": "标准编号格式不规范（GBT15773-2008 → GB/T 15773-2008）",
+    "review_type": "CONTENT",
+    "category_code": "CONTENT",
+    "field_key": "standard_id_format",
+    "field_label": "标准编号",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "GB",
+          "GBT",
+          "GB/T",
+          "SL",
+          "DB",
+          "规范"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "fullwidth2halfwidth",
+      "remove_extra_spaces"
+    ],
+    "compare": {
+      "mode": "regex_match",
+      "pattern": "\\bGBT\\d{3,6}-\\d{4}\\b"
+    },
+    "severity": "medium",
+    "priority": 55,
+    "message_tpl": "【内容】标准编号写法疑似不规范：'{hit}'",
+    "fix_hint_tpl": "建议改为“GB/T xxxx-xxxx”（必要时补空格：GB/T 15773-2008）。"
+  },
+  {
+    "rule_id": "CONS-030",
+    "name": "标准编号分隔符混用（- 与 －）",
+    "review_type": "FORMAT",
+    "category_code": "FORMAT_REVIEW",
+    "field_key": "dash_inconsistent",
+    "field_label": "标准编号分隔符",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "GB",
+          "SL",
+          "DB",
+          "－",
+          "-"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "fullwidth2halfwidth"
+    ],
+    "compare": {
+      "mode": "regex_match",
+      "pattern": "(GB\\/T\\d+－\\d{4}|SL\\d+－\\d{4}|GB\\s\\d+－\\d{4})"
+    },
+    "severity": "low",
+    "priority": 35,
+    "message_tpl": "【格式】标准编号分隔符使用全角破折号“－”：'{hit}'",
+    "fix_hint_tpl": "统一使用半角连字符“-”（如 GB/T16543-2008）。"
+  },
+  {
+    "rule_id": "CONS-031",
+    "name": "嵌套书名号使用不规范（《《》》）",
+    "review_type": "CONTENT",
+    "category_code": "CONTENT",
+    "field_key": "book_title_nested",
+    "field_label": "嵌套书名号",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "关于印发",
+          "通知",
+          "《",
+          "》"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "regex_match",
+      "pattern": "《[^》]*《[^》]*》[^》]*》"
+    },
+    "severity": "low",
+    "priority": 30,
+    "message_tpl": "【内容】嵌套书名号疑似不规范：'{hit}'",
+    "fix_hint_tpl": "外层用《》，内层用〈〉（按中文标点规范统一）。"
+  },
+  {
+    "rule_id": "CONS-032",
+    "name": "建设地点在正文/表格/附件三处一致",
+    "review_type": "CONSISTENCY_TEXT_MISMATCH",
+    "category_code": "CONSISTENCY_TEXT_MISMATCH",
+    "field_key": "location_text_3way",
+    "field_label": "建设地点（文本）",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "地理位置",
+          "建设地点",
+          "项目位于"
+        ]
+      },
+      {
+        "where": "table",
+        "hints": [
+          "建设地点",
+          "表2.1-2",
+          "表2.1-"
+        ]
+      },
+      {
+        "where": "attachment",
+        "hints": [
+          "附件",
+          "备案证",
+          "用地",
+          "地址"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "fullwidth2halfwidth",
+      "remove_extra_spaces",
+      "punct_unify"
+    ],
+    "compare": {
+      "mode": "fuzzy_equal",
+      "threshold": 0.98
+    },
+    "severity": "high",
+    "priority": 92,
+    "message_tpl": "【一致性-文本】建设地点不一致：{loc_a}='{val_a}' vs {loc_b}='{val_b}'",
+    "fix_hint_tpl": "以附件/证照地址为准统一正文与表格，清理重复字（如“院珠海校区”）。"
+  },
+  {
+    "rule_id": "CONS-033",
+    "name": "项目名称在封面/扉页/附件一致",
+    "review_type": "CONSISTENCY_TEXT_MISMATCH",
+    "category_code": "KEY_FIELD_INCONSISTENT",
+    "field_key": "project_name_cross",
+    "field_label": "项目名称",
+    "extract_targets": [
+      {
+        "where": "cover",
+        "hints": [
+          "项目名称"
+        ]
+      },
+      {
+        "where": "title_page",
+        "hints": [
+          "项目名称"
+        ]
+      },
+      {
+        "where": "attachment",
+        "hints": [
+          "备案证",
+          "施工许可",
+          "项目名称"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "remove_extra_spaces",
+      "punct_unify"
+    ],
+    "compare": {
+      "mode": "fuzzy_equal",
+      "threshold": 0.99
+    },
+    "severity": "high",
+    "priority": 95,
+    "message_tpl": "【关键字段】项目名称不一致：{loc_a} vs {loc_b}",
+    "fix_hint_tpl": "以备案证/许可等证照为准，统一全书项目名称。"
+  },
+  {
+    "rule_id": "CONS-034",
+    "name": "建设单位名称在封面/扉页/附件一致",
+    "review_type": "CONSISTENCY_TEXT_MISMATCH",
+    "category_code": "KEY_FIELD_INCONSISTENT",
+    "field_key": "owner_unit_cross",
+    "field_label": "建设单位",
+    "extract_targets": [
+      {
+        "where": "cover",
+        "hints": [
+          "建设单位"
+        ]
+      },
+      {
+        "where": "title_page",
+        "hints": [
+          "建设单位"
+        ]
+      },
+      {
+        "where": "attachment",
+        "hints": [
+          "备案证",
+          "发证机关",
+          "建设单位"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "remove_extra_spaces",
+      "company_suffix_unify",
+      "punct_unify"
+    ],
+    "compare": {
+      "mode": "fuzzy_equal",
+      "threshold": 0.99
+    },
+    "severity": "high",
+    "priority": 92,
+    "message_tpl": "【关键字段】建设单位不一致：{loc_a}='{val_a}' vs {loc_b}='{val_b}'",
+    "fix_hint_tpl": "以证照为准统一建设单位全称（含“有限公司/学院”等后缀）。"
+  },
+  {
+    "rule_id": "CONS-035",
+    "name": "“损毁/损坏”术语统一（植被/设施）",
+    "review_type": "CONTENT",
+    "category_code": "CONTENT",
+    "field_key": "term_damage_unify",
+    "field_label": "术语一致性",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "损毁",
+          "损坏",
+          "水土保持设施",
+          "植被面积"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "regex_match",
+      "pattern": "损坏水土保持设施"
+    },
+    "severity": "low",
+    "priority": 35,
+    "message_tpl": "【内容】术语建议统一：发现“损坏水土保持设施”",
+    "fix_hint_tpl": "建议统一为“损毁水土保持设施”（与章节标题口径一致）。"
+  },
+  {
+    "rule_id": "CONS-036",
+    "name": "开工时间与备案证一致（含延期说明）",
+    "review_type": "CONSISTENCY_VALUE_MISMATCH",
+    "category_code": "KEY_FIELD_INCONSISTENT",
+    "field_key": "start_date_vs_permit",
+    "field_label": "计划开工时间",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "计划开工",
+          "开工时间",
+          "总工期"
+        ]
+      },
+      {
+        "where": "attachment",
+        "hints": [
+          "备案证",
+          "计划开工时间"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "date_to_iso"
+    ],
+    "compare": {
+      "mode": "all_equal"
+    },
+    "severity": "high",
+    "priority": 96,
+    "message_tpl": "【一致性-数值】开工时间不一致：正文={val_a}，备案证={val_b}",
+    "fix_hint_tpl": "若确有调整：正文需与备案证一致，或补充“调整/变更原因说明”。"
+  },
+  {
+    "rule_id": "CONS-037",
+    "name": "完工/竣工时间与备案证一致（含延期日期）",
+    "review_type": "CONSISTENCY_VALUE_MISMATCH",
+    "category_code": "KEY_FIELD_INCONSISTENT",
+    "field_key": "end_date_vs_permit",
+    "field_label": "计划完工/竣工时间",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "完工",
+          "竣工",
+          "总工期"
+        ]
+      },
+      {
+        "where": "attachment",
+        "hints": [
+          "备案证",
+          "计划竣工时间",
+          "延期至"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "date_to_iso"
+    ],
+    "compare": {
+      "mode": "fuzzy_equal",
+      "threshold": 0.98
+    },
+    "severity": "high",
+    "priority": 90,
+    "message_tpl": "【一致性-数值】完工/竣工时间不一致：{loc_a}='{val_a}' vs {loc_b}='{val_b}'",
+    "fix_hint_tpl": "统一为最终批准/备案的竣工日期，必要时补充延期说明。"
+  },
+  {
+    "rule_id": "CONS-038",
+    "name": "总工期（月）与开完工日期差值匹配",
+    "review_type": "BUSINESS_LOGIC",
+    "category_code": "FORMULA_BALANCE_MISMATCH",
+    "field_key": "duration_months_check",
+    "field_label": "总工期（月）",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "总工期",
+          "开工",
+          "完工"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "date_to_iso",
+      "number_extract"
+    ],
+    "compare": {
+      "mode": "formula_balance_check",
+      "formula": "months_between(start_date,end_date) ~= duration_months",
+      "tolerance": 1
+    },
+    "severity": "medium",
+    "priority": 70,
+    "message_tpl": "【业务逻辑】总工期与开完工日期不匹配：{detail}",
+    "fix_hint_tpl": "核对开工/完工日期与工期月数，统一口径（按自然月/按30天/月需注明）。"
+  },
+  {
+    "rule_id": "CONS-039",
+    "name": "表格合计行=各分项之和（通用）",
+    "review_type": "SUM_MISMATCH_ROW",
+    "category_code": "SUM_MISMATCH_ROW",
+    "field_key": "table_sum_row_generic",
+    "field_label": "合计行校验",
+    "extract_targets": [
+      {
+        "where": "table",
+        "hints": [
+          "合计",
+          "小计",
+          "总计"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "fullwidth2halfwidth",
+      "number_extract"
+    ],
+    "compare": {
+      "mode": "sum_check_row",
+      "tolerance": 0.01
+    },
+    "severity": "high",
+    "priority": 88,
+    "message_tpl": "【合计行不匹配】{table_id}：合计={sum_val}，分项和={items_sum}，差值={diff}",
+    "fix_hint_tpl": "核对分项数值与单位，修正合计行或分项录入错误。"
+  },
+  {
+    "rule_id": "CONS-040",
+    "name": "表格合计列=各行之和（通用）",
+    "review_type": "SUM_MISMATCH_COL",
+    "category_code": "SUM_MISMATCH_COL",
+    "field_key": "table_sum_col_generic",
+    "field_label": "合计列校验",
+    "extract_targets": [
+      {
+        "where": "table",
+        "hints": [
+          "合计",
+          "总计",
+          "合计列"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "number_extract"
+    ],
+    "compare": {
+      "mode": "sum_check_col",
+      "tolerance": 0.01
+    },
+    "severity": "high",
+    "priority": 88,
+    "message_tpl": "【合计列不匹配】{table_id}：合计列={sum_val}，各行和={items_sum}，差值={diff}",
+    "fix_hint_tpl": "核对列方向合计口径（是否包含小计/是否重复计入）。"
+  },
+  {
+    "rule_id": "CONS-041",
+    "name": "百分比合计=100%（通用）",
+    "review_type": "PERCENTAGE_SUM_MISMATCH",
+    "category_code": "PERCENTAGE_SUM_MISMATCH",
+    "field_key": "percentage_sum_100",
+    "field_label": "百分比合计",
+    "extract_targets": [
+      {
+        "where": "table",
+        "hints": [
+          "%",
+          "百分比",
+          "比例"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "percent_unify",
+      "number_extract"
+    ],
+    "compare": {
+      "mode": "percentage_sum_check",
+      "target": 100,
+      "tolerance": 0.5
+    },
+    "severity": "medium",
+    "priority": 65,
+    "message_tpl": "【百分比合计不匹配】{table_id}：合计={sum}%（应≈100%）",
+    "fix_hint_tpl": "核对是否存在未列项/重复项，或小数位四舍五入导致误差（注明误差口径）。"
+  },
+  {
+    "rule_id": "CONS-042",
+    "name": "占地表面积单位校验（hm² vs m²）",
+    "review_type": "UNIT_INCONSISTENT",
+    "category_code": "UNIT_INCONSISTENT",
+    "field_key": "land_area_unit_check",
+    "field_label": "占地面积单位",
+    "extract_targets": [
+      {
+        "where": "table",
+        "hints": [
+          "占地表面积",
+          "m²",
+          "hm²",
+          "合计"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "fullwidth2halfwidth"
+    ],
+    "compare": {
+      "mode": "unit_check",
+      "expected_units": [
+        "hm²"
+      ],
+      "forbidden_units": [
+        "m²"
+      ],
+      "value_range_hint": "0.01~100"
+    },
+    "severity": "high",
+    "priority": 85,
+    "message_tpl": "【单位不一致】表头单位疑似错误：'{header_unit}'，但数据量级更符合hm²",
+    "fix_hint_tpl": "若数值如2.45/0.36等，单位应为hm²；请修正表头单位并全表统一。"
+  },
+  {
+    "rule_id": "CONS-043",
+    "name": "土壤侵蚀模数单位统一（t/(km²·a)）",
+    "review_type": "UNIT_INCONSISTENT",
+    "category_code": "UNIT_INCONSISTENT",
+    "field_key": "erosion_modulus_unit_unify",
+    "field_label": "侵蚀模数单位",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "侵蚀模数",
+          "t/(",
+          "km²",
+          "a"
+        ]
+      },
+      {
+        "where": "table",
+        "hints": [
+          "侵蚀模数",
+          "t/(",
+          "km²",
+          "a"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "fullwidth2halfwidth",
+      "remove_extra_spaces"
+    ],
+    "compare": {
+      "mode": "unit_check",
+      "expected_units": [
+        "t/(km²·a)"
+      ],
+      "aliases": [
+        "t/(km².a)",
+        "t/（km²·a）",
+        "t/km²·a"
+      ]
+    },
+    "severity": "medium",
+    "priority": 60,
+    "message_tpl": "【单位不一致】侵蚀模数单位写法不统一：'{hit}'",
+    "fix_hint_tpl": "统一为“t/(km²·a)”，中间点用“·”，不要用“.”。"
+  },
+  {
+    "rule_id": "CONS-044",
+    "name": "地理位置描述后出现无关地名列表（疑似图注粘贴）",
+    "review_type": "BUSINESS_LOGIC",
+    "category_code": "BUSINESS_LOGIC",
+    "field_key": "location_gibberish_list",
+    "field_label": "地理位置逻辑",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "地理位置",
+          "项目区",
+          "斗门区",
+          "金湾区",
+          "横琴",
+          "澳门"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "remove_extra_spaces"
+    ],
+    "compare": {
+      "mode": "regex_match",
+      "pattern": "项目区.*(斗门区|澳门特别行政区|横琴镇).*(金湾区|红旗镇)"
+    },
+    "severity": "medium",
+    "priority": 70,
+    "message_tpl": "【业务逻辑】地理位置段落疑似混入无关地名列表，可能与项目实际范围矛盾。",
+    "fix_hint_tpl": "将图注/标注列表移出正文描述，或改为“图2.1-1标注范围说明”，避免“项目区包含斗门区”等歧义。"
+  },
+  {
+    "rule_id": "CONS-045",
+    "name": "临时堆土区仅有拦挡/覆盖但缺排水沉沙（布设原则冲突）",
+    "review_type": "BUSINESS_LOGIC",
+    "category_code": "BUSINESS_LOGIC",
+    "field_key": "temporary_soil_no_drain_sed",
+    "field_label": "临时堆土区措施合理性",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "临时堆土区",
+          "编织袋拦挡",
+          "苫盖",
+          "排水沟",
+          "沉沙池"
+        ]
+      },
+      {
+        "where": "table",
+        "hints": [
+          "措施体系表",
+          "临时堆土区"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "ai_gap_check",
+      "conditions": [
+        "has('临时堆土区')",
+        "has_any(['编织袋拦挡','苫盖'])",
+        "not_has_any(['排水沟','截水沟','沉沙池','集水井'])"
+      ]
+    },
+    "severity": "high",
+    "priority": 88,
+    "message_tpl": "【业务逻辑】临时堆土区措施可能缺排水/沉沙，存在水土流失风险。",
+    "fix_hint_tpl": "补充排水导排（排水沟/截水沟）与泥沙控制（沉沙池/集水井）并与下游衔接，保持与总体布局原则一致。"
+  },
+  {
+    "rule_id": "CONS-046",
+    "name": "临时措施监测频次低于“每月”要求（疑似不符合GB/T51240-2018）",
+    "review_type": "BUSINESS_LOGIC",
+    "category_code": "AI_COMPLIANCE_GAP",
+    "field_key": "monitoring_frequency_temp_measures",
+    "field_label": "监测频次",
+    "extract_targets": [
+      {
+        "where": "table",
+        "hints": [
+          "监测频次",
+          "每季度",
+          "临时措施",
+          "表6.2-1"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "监测频次",
+          "每月",
+          "重点区域"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "fullwidth2halfwidth"
+    ],
+    "compare": {
+      "mode": "ai_gap_check",
+      "conditions": [
+        "table_has('临时措施')",
+        "table_has_any(['每季度','季度'])",
+        "not_has_any(['每月','月度'])"
+      ]
+    },
+    "severity": "medium",
+    "priority": 75,
+    "message_tpl": "【合规差距】临时措施监测频次疑似偏低：表格为季度/每季度。",
+    "fix_hint_tpl": "建议统一为“至少每月1次”（是否为重点区域需结合项目属性确认），并保证正文与表格一致。"
+  },
+  {
+    "rule_id": "CONS-047",
+    "name": "点型项目工程措施监测点缺失（疑似不符合标准）",
+    "review_type": "BUSINESS_LOGIC",
+    "category_code": "AI_COMPLIANCE_GAP",
+    "field_key": "missing_engineering_monitor_point",
+    "field_label": "工程措施监测点",
+    "extract_targets": [
+      {
+        "where": "table",
+        "hints": [
+          "监测点位布设位置表",
+          "表6.3-1",
+          "监测点类型"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "工程措施监测点",
+          "弃土场",
+          "开挖区",
+          "填筑区"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "ai_gap_check",
+      "conditions": [
+        "table_has('表6.3-1')",
+        "not_table_has_any(['工程措施监测点','工程措施'])"
+      ]
+    },
+    "severity": "medium",
+    "priority": 78,
+    "message_tpl": "【合规差距】监测点位表未体现工程措施监测点，可能不满足标准布点要求。",
+    "fix_hint_tpl": "补充工程措施监测点（如弃土/大开挖/填筑等重点对象至少各1点），并在正文说明对应方法与频次。"
+  },
+  {
+    "rule_id": "CONS-048",
+    "name": "缺失“水土保持监测”章节或子节检查（6章/1.9摘要）",
+    "review_type": "MISSING_SECTION",
+    "category_code": "MISSING_SECTION",
+    "field_key": "missing_ch_monitoring",
+    "field_label": "监测章节完整性",
+    "extract_targets": [
+      {
+        "where": "toc",
+        "hints": [
+          "水土保持监测",
+          "监测内容",
+          "点位布设",
+          "监测频次"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "6.",
+          "水土保持监测"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "missing_section_check",
+      "required": [
+        "6 水土保持监测",
+        "6.2 监测内容和方法",
+        "6.3 点位布设",
+        "6.5 监测成果"
+      ]
+    },
+    "severity": "high",
+    "priority": 85,
+    "message_tpl": "【缺失章节】发现监测章节/子节缺失：{missing_list}",
+    "fix_hint_tpl": "按目录补齐对应章节，并确保目录页码可跳转/对应。"
+  },
+  {
+    "rule_id": "CONS-049",
+    "name": "经纬度格式校验（度分秒紧凑、无多余空格）",
+    "review_type": "FORMAT",
+    "category_code": "FORMAT_REVIEW",
+    "field_key": "latlon_format",
+    "field_label": "经纬度坐标",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "经纬度",
+          "坐标",
+          "°",
+          "′",
+          "″",
+          "E",
+          "N"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "fullwidth2halfwidth"
+    ],
+    "compare": {
+      "mode": "regex_match",
+      "pattern": "\\d{1,3}°\\d{1,2}′\\d{1,2}(\\.\\d+)?″[EN]"
+    },
+    "severity": "low",
+    "priority": 40,
+    "message_tpl": "【格式】经纬度坐标格式疑似不规范：'{line}'",
+    "fix_hint_tpl": "建议格式：113°21′16.28″E，22°7′34.82″N（分与符号之间不留空格）。"
+  },
+  {
+    "rule_id": "CONS-050",
+    "name": "手机号位数校验（11位）",
+    "review_type": "CONTENT",
+    "category_code": "CONTENT",
+    "field_key": "phone_11_digits",
+    "field_label": "联系电话",
+    "extract_targets": [
+      {
+        "where": "attachment",
+        "hints": [
+          "电话",
+          "联系方式",
+          "联系人"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "电话",
+          "联系方式"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "fullwidth2halfwidth",
+      "remove_all_spaces"
+    ],
+    "compare": {
+      "mode": "regex_match",
+      "pattern": "\\b1\\d{10}\\b"
+    },
+    "severity": "low",
+    "priority": 35,
+    "message_tpl": "【内容】手机号位数/格式可能不正确：'{hit}'",
+    "fix_hint_tpl": "中国大陆手机号通常为11位，以1开头；核对并更正。"
+  },
+  {
+    "rule_id": "CONS-051",
+    "name": "三色评价为红色时的验收约束条款缺失",
+    "review_type": "AI_COMPLIANCE_GAP",
+    "category_code": "AI_COMPLIANCE_GAP",
+    "field_key": "tri_color_red_acceptance_clause",
+    "field_label": "三色评价-验收约束",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "三色评价",
+          "绿",
+          "黄",
+          "红",
+          "自主验收",
+          "整改"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "ai_gap_check",
+      "conditions": [
+        "has('三色评价')",
+        "has_any(['红色','红'])",
+        "not_has_any(['必须整改','整改到位','方可通过','才能通过','验收条件'])"
+      ]
+    },
+    "severity": "medium",
+    "priority": 72,
+    "message_tpl": "【合规差距】三色评价提及“红色”但未明确“整改到位后方可通过验收”的约束条件。",
+    "fix_hint_tpl": "补充条款：当评价为红色时，应整改措施到位并发挥效益后，方可通过水土保持设施自主验收。"
+  },
+  {
+    "rule_id": "CONS-052",
+    "name": "标点异常：出现“，。”",
+    "review_type": "CONTENT",
+    "category_code": "CONTENT",
+    "field_key": "punct_comma_dot",
+    "field_label": "标点",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "，。"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "regex_match",
+      "pattern": "，\\。"
+    },
+    "severity": "low",
+    "priority": 25,
+    "message_tpl": "【内容】标点异常：发现“，。”",
+    "fix_hint_tpl": "删除多余标点，保留一个句末标点即可。"
+  },
+  {
+    "rule_id": "CONS-053",
+    "name": "连续词被拆分：如“日 期”",
+    "review_type": "FORMAT",
+    "category_code": "FORMAT_REVIEW",
+    "field_key": "split_word",
+    "field_label": "词间空格",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "日 期",
+          "工 程",
+          "项 目"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "regex_match",
+      "pattern": "(日\\s+期|项\\s+目|工\\s+程)"
+    },
+    "severity": "low",
+    "priority": 20,
+    "message_tpl": "【格式】发现拆分词：'{hit}'",
+    "fix_hint_tpl": "删除词内空格，保持中文词组连续。"
+  },
+  {
+    "rule_id": "CONS-054",
+    "name": "图名/表名重复词（如“项目区项目区”）",
+    "review_type": "FORMAT",
+    "category_code": "FORMAT_REVIEW",
+    "field_key": "caption_dup_word",
+    "field_label": "图表题名",
+    "extract_targets": [
+      {
+        "where": "figure",
+        "hints": [
+          "图",
+          "项目区项目区"
+        ]
+      },
+      {
+        "where": "table",
+        "hints": [
+          "表",
+          "项目区项目区"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "regex_match",
+      "pattern": "(项目区){2,}"
+    },
+    "severity": "low",
+    "priority": 25,
+    "message_tpl": "【格式】图表题名重复：'{hit}'",
+    "fix_hint_tpl": "删除重复词，保持题名简洁准确。"
+  },
+  {
+    "rule_id": "CONS-055",
+    "name": "表格序号出现公式/异常字符（= 3 * GB3 ③）",
+    "review_type": "FORMAT",
+    "category_code": "FORMAT_REVIEW",
+    "field_key": "table_index_garbled",
+    "field_label": "表格序号",
+    "extract_targets": [
+      {
+        "where": "table",
+        "hints": [
+          "序号",
+          "=",
+          "GB3",
+          "*"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "fullwidth2halfwidth"
+    ],
+    "compare": {
+      "mode": "regex_match",
+      "pattern": "=?\\s*\\d+\\s*\\*\\s*GB\\d+\\s*[①②③④⑤⑥⑦⑧⑨]"
+    },
+    "severity": "low",
+    "priority": 35,
+    "message_tpl": "【格式】表格序号疑似乱码/公式残留：'{hit}'",
+    "fix_hint_tpl": "将序号改为规范编号（1、2、3…或①②③…），删除公式残留。"
+  },
+  {
+    "rule_id": "CONS-056",
+    "name": "表格列内容出现占位符（#image_x_y#）",
+    "review_type": "CONTENT",
+    "category_code": "CONTENT",
+    "field_key": "image_placeholder_left",
+    "field_label": "图像占位符",
+    "extract_targets": [
+      {
+        "where": "table",
+        "hints": [
+          "#image_",
+          "照片"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "regex_match",
+      "pattern": "#image_\\d+_\\d+#"
+    },
+    "severity": "medium",
+    "priority": 55,
+    "message_tpl": "【内容】发现图片占位符未替换：'{hit}'",
+    "fix_hint_tpl": "确保图片正确嵌入或替换为有效图片说明，不要保留占位符。"
+  },
+  {
+    "rule_id": "CONS-057",
+    "name": "正文提到的设备/材料在表6.4-1中缺失（交叉清单）",
+    "review_type": "CONSISTENCY",
+    "category_code": "KEY_FIELD_INCONSISTENT",
+    "field_key": "equipment_list_crosscheck",
+    "field_label": "设备材料清单一致性",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "损耗性设备",
+          "消耗性材料",
+          "GPS",
+          "无人机",
+          "监控仪器",
+          "测钉",
+          "钢钎"
+        ]
+      },
+      {
+        "where": "table",
+        "hints": [
+          "表6.4-1",
+          "监测设备及材料表"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "key_field_crosscheck",
+      "expected_in_table_if_mentioned": true
+    },
+    "severity": "medium",
+    "priority": 70,
+    "message_tpl": "【一致性】正文提及清单项但表格未列出：{missing_items}",
+    "fix_hint_tpl": "要么补充进表6.4-1，要么删除正文中不适用/不采购的项并说明。"
+  },
+  {
+    "rule_id": "CONS-058",
+    "name": "监测点数量：正文“共布设X个”与表6.3-1行数一致",
+    "review_type": "CONSISTENCY_VALUE_MISMATCH",
+    "category_code": "CONSISTENCY_VALUE_MISMATCH",
+    "field_key": "monitor_point_count",
+    "field_label": "监测点数量",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "共布设",
+          "监测点",
+          "个"
+        ]
+      },
+      {
+        "where": "table",
+        "hints": [
+          "表6.3-1",
+          "监测点1#",
+          "监测点2#",
+          "监测点3#"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "number_extract"
+    ],
+    "compare": {
+      "mode": "numeric_equal",
+      "source_a": "text_count",
+      "source_b": "table_row_count",
+      "tolerance": 0
+    },
+    "severity": "high",
+    "priority": 90,
+    "message_tpl": "【一致性-数值】监测点数量不一致：正文={val_a}，表格={val_b}",
+    "fix_hint_tpl": "统一为同一数量：要么修正文案X个，要么调整表格点位数量/编号。"
+  },
+  {
+    "rule_id": "CONS-059",
+    "name": "监测方法表中出现的方法必须在“6.2.2监测方法及要求”章节定义",
+    "review_type": "CONSISTENCY_TEXT_MISMATCH",
+    "category_code": "CONSISTENCY_TEXT_MISMATCH",
+    "field_key": "monitor_method_defined",
+    "field_label": "监测方法定义",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "6.2.2",
+          "监测方法",
+          "调查监测",
+          "无人机法",
+          "巡查法",
+          "沉沙池法"
+        ]
+      },
+      {
+        "where": "table",
+        "hints": [
+          "表6.3-1",
+          "监测方法"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "key_field_crosscheck",
+      "must_be_defined_in_section": "6.2.2"
+    },
+    "severity": "medium",
+    "priority": 75,
+    "message_tpl": "【一致性】点位表出现未定义方法：{undefined_methods}",
+    "fix_hint_tpl": "在6.2.2补充该方法定义（适用范围/步骤/计算式）或从表中删除该方法。"
+  },
+  {
+    "rule_id": "CONS-060",
+    "name": "投资估算表静态投资=I+II+IV（行内公式）",
+    "review_type": "FORMULA_BALANCE_MISMATCH",
+    "category_code": "FORMULA_BALANCE_MISMATCH",
+    "field_key": "investment_static_formula",
+    "field_label": "静态投资公式",
+    "extract_targets": [
+      {
+        "where": "table",
+        "hints": [
+          "表7.1-2",
+          "静态投资",
+          "I",
+          "II",
+          "IV"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "number_extract"
+    ],
+    "compare": {
+      "mode": "sum_check",
+      "formula": "static = I + II + IV",
+      "tolerance": 0.01
+    },
+    "severity": "high",
+    "priority": 92,
+    "message_tpl": "【公式平衡不匹配】静态投资计算不正确：{detail}",
+    "fix_hint_tpl": "按表内口径重新计算并修正静态投资或分项数值（保留两位小数）。"
+  },
+  {
+    "rule_id": "CONS-061",
+    "name": "一至五部分合计=各部分之和",
+    "review_type": "SUM_MISMATCH",
+    "category_code": "SUM_MISMATCH_ROW",
+    "field_key": "investment_part_I_sum",
+    "field_label": "一至五部分合计",
+    "extract_targets": [
+      {
+        "where": "table",
+        "hints": [
+          "一至五部分合计",
+          "工程措施",
+          "植物措施",
+          "监测措施",
+          "施工临时工程",
+          "独立费用"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "number_extract"
+    ],
+    "compare": {
+      "mode": "sum_check_row",
+      "tolerance": 0.01
+    },
+    "severity": "high",
+    "priority": 95,
+    "message_tpl": "【合计不匹配】一至五部分合计错误：{detail}",
+    "fix_hint_tpl": "核对各分部分费用与合计行，尤其检查是否有列错位/单位转换/遗漏项。"
+  },
+  {
+    "rule_id": "CONS-062",
+    "name": "基本预备费基数=一至五部分合计（口径一致）",
+    "review_type": "BUSINESS_LOGIC",
+    "category_code": "BUSINESS_LOGIC",
+    "field_key": "contingency_base_match",
+    "field_label": "预备费基数",
+    "extract_targets": [
+      {
+        "where": "table",
+        "hints": [
+          "基本预备费",
+          "计算基数",
+          "表7.1-6"
+        ]
+      },
+      {
+        "where": "table",
+        "hints": [
+          "一至五部分合计",
+          "表7.1-2"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "number_extract"
+    ],
+    "compare": {
+      "mode": "numeric_equal",
+      "tolerance": 0.01
+    },
+    "severity": "high",
+    "priority": 85,
+    "message_tpl": "【业务逻辑】预备费计算基数与一至五部分合计不一致：{detail}",
+    "fix_hint_tpl": "将预备费基数统一为一至五部分合计（同单位/同口径），并同步修正预备费金额与总投资。"
+  },
+  {
+    "rule_id": "CONS-063",
+    "name": "多余全角空格（表格单位后）",
+    "review_type": "FORMAT",
+    "category_code": "FORMAT_REVIEW",
+    "field_key": "fullwidth_space",
+    "field_label": "全角空格",
+    "extract_targets": [
+      {
+        "where": "table",
+        "hints": [
+          "m　",
+          "km　",
+          "hm²　",
+          "万元　"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "regex_match",
+      "pattern": "[a-zA-Z0-9]　+"
+    },
+    "severity": "low",
+    "priority": 20,
+    "message_tpl": "【格式】发现全角空格：'{hit}'",
+    "fix_hint_tpl": "删除全角空格或改为半角空格，保持表格对齐一致。"
+  },
+  {
+    "rule_id": "CONS-064",
+    "name": "句子以状语独立成句（“根据…结合…。”）",
+    "review_type": "CONTENT",
+    "category_code": "CONTENT",
+    "field_key": "dangling_clause",
+    "field_label": "语句完整性",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "根据",
+          "结合",
+          "。"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "regex_match",
+      "pattern": "^(根据|结合).+。$"
+    },
+    "severity": "low",
+    "priority": 30,
+    "message_tpl": "【内容】疑似残句/不完整句：'{line}'",
+    "fix_hint_tpl": "将句号改为逗号并与后句合并，或补全谓语成分。"
+  },
+  {
+    "rule_id": "CONS-065",
+    "name": "错别字：有消息→有效性",
+    "review_type": "CONTENT",
+    "category_code": "CONTENT",
+    "field_key": "typo_youxiaoxi",
+    "field_label": "错别字",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "有消息",
+          "真实性",
+          "完整性"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "regex_match",
+      "pattern": "有消息"
+    },
+    "severity": "low",
+    "priority": 25,
+    "message_tpl": "【内容】疑似错别字：'有消息'（应为“有效性”）",
+    "fix_hint_tpl": "更正为“真实性、有效性、完整性”。"
+  },
+  {
+    "rule_id": "CONS-066",
+    "name": "术语：通讯→通信（技术语境）",
+    "review_type": "CONTENT",
+    "category_code": "CONTENT",
+    "field_key": "term_tongxun",
+    "field_label": "术语",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "通讯",
+          "通信"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "regex_match",
+      "pattern": "通讯"
+    },
+    "severity": "low",
+    "priority": 20,
+    "message_tpl": "【内容】术语建议：技术语境用“通信”，发现“通讯”。",
+    "fix_hint_tpl": "统一替换为“通信”（视上下文决定是否保留“通讯录”等固定词）。"
+  },
+  {
+    "rule_id": "CONS-067",
+    "name": "术语：运置→运至（运输到）",
+    "review_type": "CONTENT",
+    "category_code": "CONTENT",
+    "field_key": "term_yunzhi",
+    "field_label": "术语",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "运置",
+          "弃方",
+          "堆土区"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "regex_match",
+      "pattern": "运置"
+    },
+    "severity": "low",
+    "priority": 20,
+    "message_tpl": "【内容】术语建议：发现“运置”。",
+    "fix_hint_tpl": "建议改为“运至”或“运输至”。"
+  },
+  {
+    "rule_id": "CONS-068",
+    "name": "草种名称疑似误写（马拉尼→马尼拉草）",
+    "review_type": "CONTENT",
+    "category_code": "CONTENT",
+    "field_key": "grass_name_miswrite",
+    "field_label": "草种名称",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "马拉尼",
+          "马尼拉草",
+          "草种"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "regex_match",
+      "pattern": "马拉尼"
+    },
+    "severity": "medium",
+    "priority": 50,
+    "message_tpl": "【内容】草种名称疑似误写：发现“马拉尼”。",
+    "fix_hint_tpl": "核对是否应为“马尼拉草”，并在植被措施/清单中统一。"
+  },
+  {
+    "rule_id": "CONS-069",
+    "name": "人民币单位表达中“为元XX/工日”笔误",
+    "review_type": "FORMAT",
+    "category_code": "FORMAT_REVIEW",
+    "field_key": "currency_word_order",
+    "field_label": "单价表达",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "元/工日",
+          "为元",
+          "工资"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "regex_match",
+      "pattern": "为元\\d+(\\.\\d+)?/工日"
+    },
+    "severity": "low",
+    "priority": 25,
+    "message_tpl": "【格式】金额表述疑似笔误：'{hit}'",
+    "fix_hint_tpl": "改为“为XX元/工日”，统一格式（技工/普工同一表达）。"
+  },
+  {
+    "rule_id": "CONS-070",
+    "name": "单位中点符号混用（· vs .）",
+    "review_type": "UNIT_INCONSISTENT",
+    "category_code": "UNIT_INCONSISTENT",
+    "field_key": "middle_dot_vs_dot",
+    "field_label": "单位中点",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "km²",
+          "·a",
+          ".a"
+        ]
+      },
+      {
+        "where": "table",
+        "hints": [
+          "km²",
+          "·a",
+          ".a"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "fullwidth2halfwidth"
+    ],
+    "compare": {
+      "mode": "regex_match",
+      "pattern": "km²\\.a"
+    },
+    "severity": "low",
+    "priority": 30,
+    "message_tpl": "【单位不一致】发现“km².a”，建议使用“km²·a”。",
+    "fix_hint_tpl": "统一为“t/(km²·a)”等规范写法。"
+  },
+  {
+    "rule_id": "CONS-071",
+    "name": "图号/表号连续性检查（缺号/重复）",
+    "review_type": "FORMAT",
+    "category_code": "FORMAT_REVIEW",
+    "field_key": "caption_sequence",
+    "field_label": "图表编号连续性",
+    "extract_targets": [
+      {
+        "where": "figure",
+        "hints": [
+          "图",
+          "图",
+          "图"
+        ]
+      },
+      {
+        "where": "table",
+        "hints": [
+          "表",
+          "表",
+          "表"
+        ]
+      },
+      {
+        "where": "toc",
+        "hints": [
+          "图目录",
+          "表目录"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "fullwidth2halfwidth"
+    ],
+    "compare": {
+      "mode": "catalog_match",
+      "sequence_check": true
+    },
+    "severity": "medium",
+    "priority": 60,
+    "message_tpl": "【格式】图表编号可能不连续/重复：{detail}",
+    "fix_hint_tpl": "补齐缺失编号或调整重复编号，并同步修改目录与引用处。"
+  },
+  {
+    "rule_id": "CONS-072",
+    "name": "页眉/页脚项目名称与正文一致",
+    "review_type": "CONSISTENCY_TEXT_MISMATCH",
+    "category_code": "CONSISTENCY_TEXT_MISMATCH",
+    "field_key": "header_footer_project_name",
+    "field_label": "页眉页脚项目名称",
+    "extract_targets": [
+      {
+        "where": "header",
+        "hints": [
+          "项目",
+          "方案"
+        ]
+      },
+      {
+        "where": "footer",
+        "hints": [
+          "项目",
+          "方案"
+        ]
+      },
+      {
+        "where": "cover",
+        "hints": [
+          "项目名称"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "remove_extra_spaces"
+    ],
+    "compare": {
+      "mode": "fuzzy_equal",
+      "threshold": 0.98
+    },
+    "severity": "medium",
+    "priority": 55,
+    "message_tpl": "【一致性-文本】页眉/页脚项目名称与封面不一致：{detail}",
+    "fix_hint_tpl": "统一页眉页脚与封面项目名称，避免出现旧项目名称残留。"
+  },
+  {
+    "rule_id": "CONS-073",
+    "name": "目录页码与实际章节起始页一致（目录对应）",
+    "review_type": "FORMAT",
+    "category_code": "FORMAT_REVIEW",
+    "field_key": "toc_page_match",
+    "field_label": "目录页码对应",
+    "extract_targets": [
+      {
+        "where": "toc",
+        "hints": [
+          "目录"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "catalog_match",
+      "toc_page_check": true
+    },
+    "severity": "medium",
+    "priority": 55,
+    "message_tpl": "【格式】目录页码与正文不一致：{detail}",
+    "fix_hint_tpl": "更新目录（Word重新生成目录），确保页码与章节一致。"
+  },
+  {
+    "rule_id": "CONS-074",
+    "name": "表格标题单位与列内数据量级一致（自动量级推断）",
+    "review_type": "UNIT_INCONSISTENT",
+    "category_code": "UNIT_INCONSISTENT",
+    "field_key": "unit_by_magnitude",
+    "field_label": "单位与量级",
+    "extract_targets": [
+      {
+        "where": "table",
+        "hints": [
+          "单位",
+          "（",
+          "）"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "number_extract"
+    ],
+    "compare": {
+      "mode": "unit_check",
+      "magnitude_infer": true
+    },
+    "severity": "medium",
+    "priority": 60,
+    "message_tpl": "【单位不一致】单位与数据量级疑似不匹配：{detail}",
+    "fix_hint_tpl": "核对表头单位（m²/hm²、元/万元、m³/万m³），统一单位并换算数值。"
+  },
+  {
+    "rule_id": "CONS-075",
+    "name": "重复用词（如“水源充足，水源充沛”）",
+    "review_type": "CONTENT",
+    "category_code": "CONTENT",
+    "field_key": "redundant_phrase",
+    "field_label": "冗余表达",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "水源充足",
+          "水源充沛"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "regex_match",
+      "pattern": "水源充足，水源充沛"
+    },
+    "severity": "low",
+    "priority": 15,
+    "message_tpl": "【内容】语义重复：'{hit}'",
+    "fix_hint_tpl": "保留其一即可，如“水源充足，供水有保障”。"
+  },
+  {
+    "rule_id": "CONS-076",
+    "name": "“50年一遇标准防洪标准”重复词",
+    "review_type": "CONTENT",
+    "category_code": "CONTENT",
+    "field_key": "dup_word_standard",
+    "field_label": "重复词",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "标准防洪标准"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "regex_match",
+      "pattern": "标准防洪标准"
+    },
+    "severity": "low",
+    "priority": 20,
+    "message_tpl": "【内容】重复用词：'标准防洪标准'",
+    "fix_hint_tpl": "建议改为“50年一遇防洪标准”。"
+  },
+  {
+    "rule_id": "CONS-077",
+    "name": "“尚开工”缺少“未”",
+    "review_type": "CONTENT",
+    "category_code": "CONTENT",
+    "field_key": "missing_negation",
+    "field_label": "语义完整",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "尚开工"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "regex_match",
+      "pattern": "尚开工"
+    },
+    "severity": "low",
+    "priority": 20,
+    "message_tpl": "【内容】语句疑似缺字：发现“尚开工”。",
+    "fix_hint_tpl": "建议改为“尚未开工”。"
+  },
+  {
+    "rule_id": "CONS-078",
+    "name": "“发证机关”字段格式（标签+冒号）",
+    "review_type": "FORMAT",
+    "category_code": "FORMAT_REVIEW",
+    "field_key": "issuer_format",
+    "field_label": "发证机关",
+    "extract_targets": [
+      {
+        "where": "attachment",
+        "hints": [
+          "发证机关"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "regex_not_match",
+      "pattern": "^发证机关[：:].+"
+    },
+    "severity": "low",
+    "priority": 25,
+    "message_tpl": "【格式】发证机关字段缺少冒号/分隔：'{line}'",
+    "fix_hint_tpl": "改为“发证机关：XXXX”。"
+  },
+  {
+    "rule_id": "CONS-079",
+    "name": "项目总投资折合美元缺少数值（折合 万美元）",
+    "review_type": "CONTENT",
+    "category_code": "CONTENT",
+    "field_key": "usd_equiv_missing",
+    "field_label": "折合美元信息",
+    "extract_targets": [
+      {
+        "where": "attachment",
+        "hints": [
+          "折合",
+          "万美元"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "regex_match",
+      "pattern": "折合\\s*万美元"
+    },
+    "severity": "low",
+    "priority": 30,
+    "message_tpl": "【内容】折合美元缺少数值：'{line}'",
+    "fix_hint_tpl": "补充具体折算金额或删除该括号内容（避免信息不完整）。"
+  },
+  {
+    "rule_id": "CONS-080",
+    "name": "章节引用的表号必须存在（交叉引用检查）",
+    "review_type": "CONSISTENCY",
+    "category_code": "CONSISTENCY",
+    "field_key": "table_reference_exists",
+    "field_label": "表号引用",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "见表",
+          "表",
+          "表"
+        ]
+      },
+      {
+        "where": "table",
+        "hints": [
+          "表"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "catalog_match",
+      "ref_must_exist": true
+    },
+    "severity": "medium",
+    "priority": 60,
+    "message_tpl": "【一致性】引用表号不存在或不匹配：{detail}",
+    "fix_hint_tpl": "修正引用表号或补齐对应表格编号/标题。"
+  },
+  {
+    "rule_id": "CONS-081",
+    "name": "章节引用的图号必须存在（交叉引用检查）",
+    "review_type": "CONSISTENCY",
+    "category_code": "CONSISTENCY",
+    "field_key": "figure_reference_exists",
+    "field_label": "图号引用",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "见图",
+          "图",
+          "图"
+        ]
+      },
+      {
+        "where": "figure",
+        "hints": [
+          "图"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "catalog_match",
+      "ref_must_exist": true
+    },
+    "severity": "medium",
+    "priority": 60,
+    "message_tpl": "【一致性】引用图号不存在或不匹配：{detail}",
+    "fix_hint_tpl": "修正引用图号或补齐对应图编号/图名。"
+  },
+  {
+    "rule_id": "CONS-082",
+    "name": "章节编号规范（9..1 这种双点）",
+    "review_type": "FORMAT",
+    "category_code": "FORMAT_REVIEW",
+    "field_key": "section_number_double_dot",
+    "field_label": "章节编号",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "..",
+          "9.."
+        ]
+      },
+      {
+        "where": "toc",
+        "hints": [
+          ".."
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "regex_match",
+      "pattern": "\\b\\d+\\.\\.+\\d+\\b"
+    },
+    "severity": "low",
+    "priority": 25,
+    "message_tpl": "【格式】章节编号异常（双点）：'{hit}'",
+    "fix_hint_tpl": "修正为标准编号，如“9.1”。"
+  },
+  {
+    "rule_id": "CONS-083",
+    "name": "表内标题重复（如两次“二、植物措施”）",
+    "review_type": "FORMAT",
+    "category_code": "FORMAT_REVIEW",
+    "field_key": "table_section_title_duplicate",
+    "field_label": "表内结构",
+    "extract_targets": [
+      {
+        "where": "table",
+        "hints": [
+          "一、",
+          "二、",
+          "三、",
+          "植物措施"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "ai_gap_check",
+      "conditions": [
+        "table_has_duplicate_heading('二、植物措施')"
+      ]
+    },
+    "severity": "low",
+    "priority": 35,
+    "message_tpl": "【格式】表内分项标题重复：二、植物措施",
+    "fix_hint_tpl": "合并为一个标题，下设分区分项（主体工程区/临时堆土区）列示。"
+  },
+  {
+    "rule_id": "CONS-084",
+    "name": "表格单位列与项目列存在包含/重复（采样工具含水桶但另列水桶）",
+    "review_type": "CONTENT",
+    "category_code": "CONTENT",
+    "field_key": "table_item_overlap",
+    "field_label": "清单项重叠",
+    "extract_targets": [
+      {
+        "where": "table",
+        "hints": [
+          "采样工具",
+          "水桶",
+          "铁铲",
+          "铁锤"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "ai_gap_check",
+      "conditions": [
+        "table_has('采样工具')",
+        "table_has('水桶')"
+      ]
+    },
+    "severity": "low",
+    "priority": 30,
+    "message_tpl": "【内容】清单项可能重叠：采样工具包含水桶但又单列水桶。",
+    "fix_hint_tpl": "明确1.6为“工具套装”并删除单列，或将1.6拆分为独立条目并统一数量单位。"
+  },
+  {
+    "rule_id": "CONS-085",
+    "name": "清单单位“个/套/台”合理性提示（多物件用“套”）",
+    "review_type": "CONTENT",
+    "category_code": "CONTENT",
+    "field_key": "unit_set_suggestion",
+    "field_label": "数量单位合理性",
+    "extract_targets": [
+      {
+        "where": "table",
+        "hints": [
+          "单位",
+          "个",
+          "套",
+          "测绳",
+          "剪刀"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "ai_gap_check",
+      "conditions": [
+        "row_has_any(['测绳','剪刀'])",
+        "unit_is('个')"
+      ]
+    },
+    "severity": "low",
+    "priority": 25,
+    "message_tpl": "【内容】数量单位可能不精确：多物件组合建议用“套”。",
+    "fix_hint_tpl": "将“植被测量仪器（测绳、剪刀）”单位改为“套”，或拆成两行分别计量。"
+  },
+  {
+    "rule_id": "CONS-086",
+    "name": "文本中出现不可见/控制字符（异常字符）",
+    "review_type": "FORMAT",
+    "category_code": "FORMAT_REVIEW",
+    "field_key": "control_chars",
+    "field_label": "控制字符",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "\u0000",
+          "\u0001",
+          "\u000b"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "regex_match",
+      "pattern": "[\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F]"
+    },
+    "severity": "low",
+    "priority": 30,
+    "message_tpl": "【格式】发现控制字符/异常不可见字符。",
+    "fix_hint_tpl": "清理不可见字符（复制到纯文本再粘贴或使用查找替换）。"
+  },
+  {
+    "rule_id": "CONS-087",
+    "name": "括号不匹配检查（多余右括号）",
+    "review_type": "FORMAT",
+    "category_code": "FORMAT_REVIEW",
+    "field_key": "paren_mismatch",
+    "field_label": "括号匹配",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          ")",
+          "（",
+          "）"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "punctuation_check",
+      "pairs": [
+        [
+          "（",
+          "）"
+        ],
+        [
+          "(",
+          ")"
+        ]
+      ]
+    },
+    "severity": "low",
+    "priority": 35,
+    "message_tpl": "【格式】括号疑似不匹配：{detail}",
+    "fix_hint_tpl": "补齐缺失的左括号或删除多余右括号，保持成对出现。"
+  },
+  {
+    "rule_id": "CONS-088",
+    "name": "工程分区术语校验（施工营造区→施工生产生活区/施工区）",
+    "review_type": "CONTENT",
+    "category_code": "CONTENT",
+    "field_key": "term_construction_zone",
+    "field_label": "预测单元术语",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "施工营造区",
+          "施工生产生活区",
+          "施工区"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "regex_match",
+      "pattern": "施工营造区"
+    },
+    "severity": "low",
+    "priority": 40,
+    "message_tpl": "【内容】术语可能不规范：发现“施工营造区”。",
+    "fix_hint_tpl": "建议核实并统一为“施工生产生活区”或“施工区”（全书一致）。"
+  },
+  {
+    "rule_id": "CONS-089",
+    "name": "“主体组织设计”术语疑似错误",
+    "review_type": "CONTENT",
+    "category_code": "CONTENT",
+    "field_key": "term_main_design",
+    "field_label": "术语",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "主体组织设计"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "regex_match",
+      "pattern": "主体组织设计"
+    },
+    "severity": "low",
+    "priority": 35,
+    "message_tpl": "【内容】术语可能不规范：主体组织设计。",
+    "fix_hint_tpl": "核实应为“主体工程设计”或“施工组织设计”，并全书统一。"
+  },
+  {
+    "rule_id": "CONS-090",
+    "name": "“泥湾门/坭湾门”名称一致性",
+    "review_type": "CONSISTENCY_TEXT_MISMATCH",
+    "category_code": "CONSISTENCY_TEXT_MISMATCH",
+    "field_key": "name_niwanmen",
+    "field_label": "地名一致性",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "泥湾门",
+          "坭湾门"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "fuzzy_equal",
+      "threshold": 0.9
+    },
+    "severity": "low",
+    "priority": 35,
+    "message_tpl": "【一致性-文本】同一地名存在不同写法：泥湾门/坭湾门。",
+    "fix_hint_tpl": "核对权威地名用字，统一一种写法并全文替换。"
+  },
+  {
+    "rule_id": "CONS-091",
+    "name": "“泻湖/潟湖”术语一致性提示",
+    "review_type": "CONTENT",
+    "category_code": "CONTENT",
+    "field_key": "term_lagoon",
+    "field_label": "地貌术语",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "泻湖",
+          "潟湖"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "regex_match",
+      "pattern": "泻湖"
+    },
+    "severity": "low",
+    "priority": 25,
+    "message_tpl": "【内容】术语可能不规范：发现“泻湖”。",
+    "fix_hint_tpl": "地貌学常用“潟湖”，建议核实后统一用词。"
+  },
+  {
+    "rule_id": "CONS-092",
+    "name": "单位中括号/括号混用（t/（km²·a）（t/km²·a））",
+    "review_type": "UNIT_INCONSISTENT",
+    "category_code": "UNIT_INCONSISTENT",
+    "field_key": "paren_style_in_units",
+    "field_label": "单位括号样式",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "t/",
+          "（",
+          "）",
+          "(",
+          ")"
+        ]
+      },
+      {
+        "where": "table",
+        "hints": [
+          "t/",
+          "（",
+          "）",
+          "(",
+          ")"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "unit_check",
+      "expected_units": [
+        "t/(km²·a)"
+      ],
+      "allow_paren_variants": false
+    },
+    "severity": "low",
+    "priority": 30,
+    "message_tpl": "【单位不一致】单位括号样式混用：{detail}",
+    "fix_hint_tpl": "统一为英文括号：t/(km²·a)，避免（ 与 ) 混搭。"
+  },
+  {
+    "rule_id": "CONS-093",
+    "name": "正文与表格单位一致（万元/元）",
+    "review_type": "UNIT_INCONSISTENT",
+    "category_code": "UNIT_INCONSISTENT",
+    "field_key": "currency_unit_cross",
+    "field_label": "金额单位",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "万元",
+          "元",
+          "投资"
+        ]
+      },
+      {
+        "where": "table",
+        "hints": [
+          "单位：万元",
+          "单位：元"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "unit_check",
+      "expected_units": [
+        "万元"
+      ],
+      "cross_section": true
+    },
+    "severity": "medium",
+    "priority": 60,
+    "message_tpl": "【单位不一致】正文/表格金额单位可能混用：{detail}",
+    "fix_hint_tpl": "统一口径：表头写清单位，正文引用时保持同一单位并必要时注明换算。"
+  },
+  {
+    "rule_id": "CONS-094",
+    "name": "“需要建设单位需…”重复词",
+    "review_type": "CONTENT",
+    "category_code": "CONTENT",
+    "field_key": "dup_need",
+    "field_label": "语法冗余",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "需要建设单位需"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "regex_match",
+      "pattern": "需要.+需"
+    },
+    "severity": "low",
+    "priority": 20,
+    "message_tpl": "【内容】重复用词导致不通顺：'{line}'",
+    "fix_hint_tpl": "改为“建设单位需…”或“需要建设单位…”。"
+  },
+  {
+    "rule_id": "CONS-095",
+    "name": "监测方法章节存在“公式”但缺失公式本体",
+    "review_type": "CONTENT",
+    "category_code": "CONTENT",
+    "field_key": "formula_missing_body",
+    "field_label": "公式完整性",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "采用以下公式",
+          "公式",
+          "（式",
+          "："
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "ai_gap_check",
+      "conditions": [
+        "has('采用以下公式')",
+        "not_has_any(['=', '∑', 'Σ', '×', '/', '（1）', '(1)'])"
+      ]
+    },
+    "severity": "medium",
+    "priority": 65,
+    "message_tpl": "【内容】提到公式但疑似缺失公式表达式。",
+    "fix_hint_tpl": "补充公式本体（含变量定义与单位），或删除“采用以下公式”表述。"
+  },
+  {
+    "rule_id": "CONS-096",
+    "name": "表内末尾多余顿号（“无人机法、”）",
+    "review_type": "FORMAT",
+    "category_code": "FORMAT_REVIEW",
+    "field_key": "trailing_dunhao",
+    "field_label": "末尾标点",
+    "extract_targets": [
+      {
+        "where": "table",
+        "hints": [
+          "、"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "regex_match",
+      "pattern": "、\\s*$"
+    },
+    "severity": "low",
+    "priority": 15,
+    "message_tpl": "【格式】末尾多余顿号：'{cell}'",
+    "fix_hint_tpl": "删除末尾顿号或补充缺失项。"
+  },
+  {
+    "rule_id": "CONS-097",
+    "name": "工程量表与措施体系表关键量一致（同一措施）",
+    "review_type": "CONSISTENCY_VALUE_MISMATCH",
+    "category_code": "CONSISTENCY_VALUE_MISMATCH",
+    "field_key": "measure_qty_cross_tables",
+    "field_label": "措施工程量一致性",
+    "extract_targets": [
+      {
+        "where": "table",
+        "hints": [
+          "措施体系表",
+          "表5.2-1"
+        ]
+      },
+      {
+        "where": "table",
+        "hints": [
+          "工程量",
+          "汇总表",
+          "表5.3"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "number_extract"
+    ],
+    "compare": {
+      "mode": "key_field_crosscheck",
+      "key": "measure_name",
+      "value": "quantity",
+      "tolerance": 0.01
+    },
+    "severity": "high",
+    "priority": 80,
+    "message_tpl": "【一致性-数值】同一措施工程量在不同表不一致：{detail}",
+    "fix_hint_tpl": "以汇总表或最终工程量表为准统一，并同步修改正文描述与附图标注。"
+  },
+  {
+    "rule_id": "CONS-098",
+    "name": "防治分区面积合计=防治责任范围面积",
+    "review_type": "CONSISTENCY_VALUE_MISMATCH",
+    "category_code": "FORMULA_BALANCE_MISMATCH",
+    "field_key": "zone_area_sum_equals_responsibility_area",
+    "field_label": "分区面积合计",
+    "extract_targets": [
+      {
+        "where": "table",
+        "hints": [
+          "防治分区面积",
+          "表1.4-1"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "防治责任范围",
+          "hm²"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "number_unit_to_hm2"
+    ],
+    "compare": {
+      "mode": "sum_check",
+      "tolerance": 0.01
+    },
+    "severity": "high",
+    "priority": 85,
+    "message_tpl": "【公式平衡】分区面积合计与防治责任范围不一致：{detail}",
+    "fix_hint_tpl": "明确每分区永久/临时属性，保证合计与责任范围一致（同单位hm²）。"
+  },
+  {
+    "rule_id": "CONS-099",
+    "name": "永久占地+临时占地=防治责任范围（如口径一致）",
+    "review_type": "BUSINESS_LOGIC",
+    "category_code": "FORMULA_BALANCE_MISMATCH",
+    "field_key": "perm_temp_sum",
+    "field_label": "占地口径闭合",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "永久占地",
+          "临时占地",
+          "防治责任范围"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "number_unit_to_hm2"
+    ],
+    "compare": {
+      "mode": "sum_check",
+      "tolerance": 0.02
+    },
+    "severity": "medium",
+    "priority": 70,
+    "message_tpl": "【业务逻辑】永久+临时占地与责任范围口径可能不闭合：{detail}",
+    "fix_hint_tpl": "说明是否存在“代征地/红线外临时占地/施工便道”等差异口径，并在表中标注。"
+  },
+  {
+    "rule_id": "CONS-100",
+    "name": "关键字段：责任范围面积在摘要/第1章/第6章一致",
+    "review_type": "CONSISTENCY_VALUE_MISMATCH",
+    "category_code": "KEY_FIELD_INCONSISTENT",
+    "field_key": "resp_area_multi_section",
+    "field_label": "防治责任范围面积",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "1.4",
+          "防治责任范围"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "1.9",
+          "监测范围"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "6.1",
+          "监测范围"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "number_unit_to_hm2"
+    ],
+    "compare": {
+      "mode": "numeric_equal",
+      "tolerance": 0.01
+    },
+    "severity": "high",
+    "priority": 88,
+    "message_tpl": "【关键字段】责任范围面积在多处不一致：{detail}",
+    "fix_hint_tpl": "统一为同一数值（hm²），并同步至监测范围、预测范围、效益分析引用处。"
+  },
+  {
+    "rule_id": "CONS-101",
+    "name": "一致性：工程名称在图框标题栏一致",
+    "review_type": "CONSISTENCY_TEXT_MISMATCH",
+    "category_code": "CONSISTENCY_TEXT_MISMATCH",
+    "field_key": "drawing_title_project_name",
+    "field_label": "图框工程名称",
+    "extract_targets": [
+      {
+        "where": "drawing",
+        "hints": [
+          "工程名称",
+          "项目名称"
+        ]
+      },
+      {
+        "where": "cover",
+        "hints": [
+          "项目名称"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "remove_extra_spaces"
+    ],
+    "compare": {
+      "mode": "fuzzy_equal",
+      "threshold": 0.98
+    },
+    "severity": "medium",
+    "priority": 65,
+    "message_tpl": "【一致性-文本】图框标题栏工程名称与封面不一致：{detail}",
+    "fix_hint_tpl": "统一图框标题栏项目名称，避免旧版本残留。"
+  },
+  {
+    "rule_id": "CONS-102",
+    "name": "一致性：章节标题与目录标题一致",
+    "review_type": "CONSISTENCY",
+    "category_code": "CONSISTENCY",
+    "field_key": "toc_title_match",
+    "field_label": "目录标题一致性",
+    "extract_targets": [
+      {
+        "where": "toc",
+        "hints": [
+          "目录"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "章",
+          "节"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "remove_extra_spaces"
+    ],
+    "compare": {
+      "mode": "catalog_match",
+      "title_match": true
+    },
+    "severity": "low",
+    "priority": 40,
+    "message_tpl": "【一致性】目录标题与正文标题不一致：{detail}",
+    "fix_hint_tpl": "更新目录或修正正文标题，保持一致。"
+  },
+  {
+    "rule_id": "CONS-103",
+    "name": "内容：句内缺逗号（“报告（…）本项目…”）",
+    "review_type": "CONTENT",
+    "category_code": "CONTENT",
+    "field_key": "missing_comma_after_citation",
+    "field_label": "引用后标点",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "报告",
+          "）本项目"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "regex_match",
+      "pattern": "）本项目"
+    },
+    "severity": "low",
+    "priority": 20,
+    "message_tpl": "【内容】引用后缺少逗号导致不通顺：'{line}'",
+    "fix_hint_tpl": "建议“……（…），本项目……”。"
+  },
+  {
+    "rule_id": "CONS-104",
+    "name": "内容：错别字“排水出口出”",
+    "review_type": "CONTENT",
+    "category_code": "CONTENT",
+    "field_key": "typo_chu_vs_chu2",
+    "field_label": "错别字",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "排水出口出"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "regex_match",
+      "pattern": "出口出"
+    },
+    "severity": "low",
+    "priority": 15,
+    "message_tpl": "【内容】疑似错别字：排水出口出",
+    "fix_hint_tpl": "改为“排水出口处”。"
+  },
+  {
+    "rule_id": "CONS-105",
+    "name": "业务逻辑违规：扉页职称包含禁用词（可配置词库）",
+    "review_type": "BUSINESS_LOGIC_PROHIBITION_VIOLATION",
+    "category_code": "BUSINESS_LOGIC_PROHIBITION_VIOLATION",
+    "field_key": "titlepage_forbidden_terms",
+    "field_label": "禁用词",
+    "extract_targets": [
+      {
+        "where": "title_page",
+        "hints": [
+          "职称",
+          "工程师",
+          "项目负责人"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "forbidden_token",
+      "pattern": "(中级|助理工程师|见习)"
+    },
+    "severity": "high",
+    "priority": 80,
+    "message_tpl": "【业务逻辑违规】扉页出现禁用职称/词：'{hit}'",
+    "fix_hint_tpl": "按审查要求替换为合规职称或删除不允许表述。"
+  },
+  {
+    "rule_id": "CONS-106",
+    "name": "缺失章节：投资估算章节（第7章）",
+    "review_type": "MISSING_SECTION",
+    "category_code": "MISSING_SECTION",
+    "field_key": "missing_ch_investment",
+    "field_label": "第7章完整性",
+    "extract_targets": [
+      {
+        "where": "toc",
+        "hints": [
+          "水土保持投资估算",
+          "效益分析",
+          "第7章"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "missing_section_check",
+      "required": [
+        "7 水土保持投资估算与效益分析"
+      ]
+    },
+    "severity": "high",
+    "priority": 75,
+    "message_tpl": "【缺失章节】缺少第7章或标题不规范：{missing_list}",
+    "fix_hint_tpl": "补齐“投资估算与效益分析”章节及必要表格（总投资、独立费用、预备费等）。"
+  },
+  {
+    "rule_id": "CONS-107",
+    "name": "AI合规差距：标准引用必须带版本与编号（GB/T…-YYYY）",
+    "review_type": "AI_COMPLIANCE_GAP",
+    "category_code": "AI_COMPLIANCE_GAP",
+    "field_key": "standard_ref_version",
+    "field_label": "标准引用规范",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "应符合",
+          "标准",
+          "规范"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "ai_gap_check",
+      "conditions": [
+        "has_any(['应符合','按照'])",
+        "has_any(['标准','规范'])",
+        "not_has_any(['GB','GB/T','SL','DB'])"
+      ]
+    },
+    "severity": "low",
+    "priority": 45,
+    "message_tpl": "【合规差距】引用标准/规范但未给出标准编号（GB/SL/DB等）。",
+    "fix_hint_tpl": "补充标准全称+编号+年份（如 GB/T 51240-2018）。"
+  },
+  {
+    "rule_id": "CONS-108",
+    "name": "一致性：预测单元名称在第4章与表格一致",
+    "review_type": "CONSISTENCY_TEXT_MISMATCH",
+    "category_code": "CONSISTENCY_TEXT_MISMATCH",
+    "field_key": "predict_unit_name_match",
+    "field_label": "预测单元名称",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "预测单元"
+        ]
+      },
+      {
+        "where": "table",
+        "hints": [
+          "预测单元",
+          "表4.2-"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "fuzzy_equal",
+      "threshold": 0.96
+    },
+    "severity": "medium",
+    "priority": 55,
+    "message_tpl": "【一致性-文本】预测单元名称在正文/表格不一致：{detail}",
+    "fix_hint_tpl": "统一预测单元命名（主体工程区/施工区/临时堆土区等）并保持全书一致。"
+  },
+  {
+    "rule_id": "CONS-109",
+    "name": "格式：自然恢复期表格序号缺失",
+    "review_type": "FORMAT",
+    "category_code": "FORMAT_REVIEW",
+    "field_key": "missing_table_index",
+    "field_label": "表格序号缺失",
+    "extract_targets": [
+      {
+        "where": "table",
+        "hints": [
+          "序号",
+          "自然恢复期"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "ai_gap_check",
+      "conditions": [
+        "table_has('自然恢复期')",
+        "has_empty_cell_in_column('序号')"
+      ]
+    },
+    "severity": "low",
+    "priority": 30,
+    "message_tpl": "【格式】表格序号存在空缺：{detail}",
+    "fix_hint_tpl": "补齐序号（连续编号），避免空序号影响引用与统计。"
+  },
+  {
+    "rule_id": "CONS-110",
+    "name": "内容：句内缺标点（“组成全区广泛出露”）",
+    "review_type": "CONTENT",
+    "category_code": "CONTENT",
+    "field_key": "missing_punctuation_two_clauses",
+    "field_label": "标点缺失",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "组成全区",
+          "广泛出露"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "regex_match",
+      "pattern": "组成全区"
+    },
+    "severity": "low",
+    "priority": 20,
+    "message_tpl": "【内容】两个分句之间缺标点：'{line}'",
+    "fix_hint_tpl": "建议加逗号：'……组成，全区广泛出露……'。"
+  },
+  {
+    "rule_id": "CONS-111",
+    "name": "内容：不当顿号（“类型多样、平原海岸…”）",
+    "review_type": "CONTENT",
+    "category_code": "CONTENT",
+    "field_key": "wrong_dunhao",
+    "field_label": "顿号使用",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "类型多样、"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "regex_match",
+      "pattern": "类型多样、"
+    },
+    "severity": "low",
+    "priority": 15,
+    "message_tpl": "【内容】顿号用法可能不当：'{line}'",
+    "fix_hint_tpl": "改为逗号或调整句式，使成分关系清晰。"
+  },
+  {
+    "rule_id": "CONS-112",
+    "name": "内容：地质术语错别字（淤泥质质土）",
+    "review_type": "CONTENT",
+    "category_code": "CONTENT",
+    "field_key": "typo_yunizhi",
+    "field_label": "地质术语",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "淤泥质质土"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "regex_match",
+      "pattern": "淤泥质质土"
+    },
+    "severity": "low",
+    "priority": 25,
+    "message_tpl": "【内容】地质术语疑似错别字：淤泥质质土",
+    "fix_hint_tpl": "更正为“淤泥质土”或“淤泥质粘土”（以勘察报告为准）。"
+  },
+  {
+    "rule_id": "CONS-113",
+    "name": "一致性：项目红线面积与用地构成合计一致",
+    "review_type": "FORMULA_BALANCE_MISMATCH",
+    "category_code": "SUM_MISMATCH",
+    "field_key": "land_use_sum_equals_total",
+    "field_label": "用地构成合计",
+    "extract_targets": [
+      {
+        "where": "table",
+        "hints": [
+          "建筑物",
+          "道路广场",
+          "景观绿化",
+          "合计",
+          "红线"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "number_unit_to_hm2"
+    ],
+    "compare": {
+      "mode": "sum_check_row",
+      "tolerance": 0.01
+    },
+    "severity": "high",
+    "priority": 85,
+    "message_tpl": "【公式平衡】用地构成合计与总用地不一致：{detail}",
+    "fix_hint_tpl": "核对各分项面积与合计（同单位hm²），避免漏项/重复项。"
+  },
+  {
+    "rule_id": "CONS-114",
+    "name": "一致性：土壤容许流失量在正文/表格一致",
+    "review_type": "CONSISTENCY_VALUE_MISMATCH",
+    "category_code": "CONSISTENCY_VALUE_MISMATCH",
+    "field_key": "tolerable_loss_value",
+    "field_label": "土壤容许流失量",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "土壤容许流失量",
+          "t/(km²·a)"
+        ]
+      },
+      {
+        "where": "table",
+        "hints": [
+          "容许流失量",
+          "t/(km²·a)"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "number_extract"
+    ],
+    "compare": {
+      "mode": "numeric_equal",
+      "tolerance": 0.01
+    },
+    "severity": "medium",
+    "priority": 60,
+    "message_tpl": "【一致性-数值】容许流失量在正文/表格不一致：{detail}",
+    "fix_hint_tpl": "统一口径与单位，确保引用一致。"
+  },
+  {
+    "rule_id": "CONS-115",
+    "name": "一致性：侵蚀模数背景值在第4章与表4.3-3一致",
+    "review_type": "CONSISTENCY_VALUE_MISMATCH",
+    "category_code": "CONSISTENCY_VALUE_MISMATCH",
+    "field_key": "erosion_bg_value",
+    "field_label": "侵蚀模数背景值",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "背景值",
+          "侵蚀模数"
+        ]
+      },
+      {
+        "where": "table",
+        "hints": [
+          "表4.3-3",
+          "背景值"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "number_extract"
+    ],
+    "compare": {
+      "mode": "numeric_equal",
+      "tolerance": 0.01
+    },
+    "severity": "medium",
+    "priority": 60,
+    "message_tpl": "【一致性-数值】背景值不一致：{detail}",
+    "fix_hint_tpl": "统一背景值并保证单位一致（t/(km²·a)）。"
+  },
+  {
+    "rule_id": "CONS-116",
+    "name": "业务逻辑：弃方量与受纳场容量匹配（不得超容量）",
+    "review_type": "BUSINESS_LOGIC",
+    "category_code": "BUSINESS_LOGIC",
+    "field_key": "spoil_capacity_check",
+    "field_label": "弃方受纳能力",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "弃方",
+          "m³",
+          "受纳",
+          "接收",
+          "容量"
+        ]
+      },
+      {
+        "where": "attachment",
+        "hints": [
+          "协议",
+          "受纳"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "number_unit_to_m3"
+    ],
+    "compare": {
+      "mode": "formula_balance_check",
+      "formula": "spoil_volume <= capacity",
+      "tolerance": 0
+    },
+    "severity": "high",
+    "priority": 80,
+    "message_tpl": "【业务逻辑】弃方量可能超过受纳容量：{detail}",
+    "fix_hint_tpl": "核对弃方量与受纳证明/协议容量，必要时调整弃方去向或补充受纳证明。"
+  },
+  {
+    "rule_id": "CONS-117",
+    "name": "内容：‘受纳’用词提示（可改‘接纳/接收’）",
+    "review_type": "CONTENT",
+    "category_code": "CONTENT",
+    "field_key": "term_shouna",
+    "field_label": "用词",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "受纳"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "regex_match",
+      "pattern": "受纳"
+    },
+    "severity": "low",
+    "priority": 15,
+    "message_tpl": "【内容】用词提示：发现“受纳”。",
+    "fix_hint_tpl": "可根据语境替换为“接纳/接收/收纳”，保持表达自然一致。"
+  },
+  {
+    "rule_id": "CONS-118",
+    "name": "一致性：监测设备表与正文“消耗性/损耗性”分类一致",
+    "review_type": "CONSISTENCY_TEXT_MISMATCH",
+    "category_code": "CONSISTENCY_TEXT_MISMATCH",
+    "field_key": "consumable_class_match",
+    "field_label": "消耗性/损耗性分类",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "损耗性设备",
+          "消耗性材料"
+        ]
+      },
+      {
+        "where": "table",
+        "hints": [
+          "表6.4-1",
+          "损耗性",
+          "消耗性"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "key_field_crosscheck",
+      "key": "item_name",
+      "value": "class"
+    },
+    "severity": "low",
+    "priority": 45,
+    "message_tpl": "【一致性】正文与表格分类不一致：{detail}",
+    "fix_hint_tpl": "统一分类口径（损耗性设备/消耗性材料），避免同一项在两类反复出现。"
+  },
+  {
+    "rule_id": "CONS-119",
+    "name": "格式：专家复核列复选框一致性（□已修改/□未修改）",
+    "review_type": "FORMAT",
+    "category_code": "FORMAT_REVIEW",
+    "field_key": "checkbox_format",
+    "field_label": "复选框格式",
+    "extract_targets": [
+      {
+        "where": "attachment",
+        "hints": [
+          "专家复核",
+          "□已修改",
+          "□未修改",
+          "已修改"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "ai_gap_check",
+      "conditions": [
+        "has('专家复核')",
+        "mixed_checkbox_style()"
+      ]
+    },
+    "severity": "low",
+    "priority": 25,
+    "message_tpl": "【格式】专家复核格式不统一：部分有□，部分无□。",
+    "fix_hint_tpl": "统一为“□已修改 □未修改”或统一为文本，不要混用。"
+  },
+  {
+    "rule_id": "CONS-120",
+    "name": "格式：图表标题与编号间空格规范（图4.1-1  xxx）",
+    "review_type": "FORMAT",
+    "category_code": "FORMAT_REVIEW",
+    "field_key": "caption_space_standard",
+    "field_label": "图表标题格式",
+    "extract_targets": [
+      {
+        "where": "figure",
+        "hints": [
+          "图",
+          "-",
+          " "
+        ]
+      },
+      {
+        "where": "table",
+        "hints": [
+          "表",
+          "-",
+          " "
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "regex_not_match",
+      "pattern": "^(图|表)\\d+(\\.\\d+)?-\\d+\\s+.+$"
+    },
+    "severity": "low",
+    "priority": 20,
+    "message_tpl": "【格式】图/表标题格式可能不规范：'{line}'",
+    "fix_hint_tpl": "建议“图X.X-X 空格 标题”或“表X.X-X 空格 标题”。"
+  },
+  {
+    "rule_id": "CONS-121",
+    "name": "缺失章节：水土保持措施布设（第5章）",
+    "review_type": "MISSING_SECTION",
+    "category_code": "MISSING_SECTION",
+    "field_key": "missing_ch_measures",
+    "field_label": "第5章完整性",
+    "extract_targets": [
+      {
+        "where": "toc",
+        "hints": [
+          "水土保持措施布设",
+          "第5章"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "missing_section_check",
+      "required": [
+        "5 水土保持措施布设",
+        "5.1 措施总体布局",
+        "5.2 分区措施布设"
+      ]
+    },
+    "severity": "high",
+    "priority": 75,
+    "message_tpl": "【缺失章节】第5章或关键子节缺失：{missing_list}",
+    "fix_hint_tpl": "补齐第5章并确保与措施体系表/工程量表/附图对应。"
+  },
+  {
+    "rule_id": "CONS-122",
+    "name": "六项指标公式匹配（目标值/实现值/计算式）",
+    "review_type": "FORMULA_MISMATCH_SIX_INDICATORS",
+    "category_code": "FORMULA_MISMATCH_SIX_INDICATORS",
+    "field_key": "six_indicator_formula",
+    "field_label": "六项指标公式",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "六项指标",
+          "扰动土地整治率",
+          "水土流失总治理度",
+          "土壤流失控制比",
+          "渣土防护率",
+          "林草植被恢复率",
+          "林草覆盖率"
+        ]
+      },
+      {
+        "where": "table",
+        "hints": [
+          "六项指标",
+          "%"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim",
+      "percent_unify",
+      "number_extract"
+    ],
+    "compare": {
+      "mode": "formula_balance_check",
+      "formula": "indicator_value == computed_value",
+      "tolerance": 0.5
+    },
+    "severity": "medium",
+    "priority": 70,
+    "message_tpl": "【六项指标公式不匹配】指标值与计算式/分项数据不一致：{detail}",
+    "fix_hint_tpl": "核对分子分母口径（面积/治理面积/控制量），统一公式与表格数据来源。"
+  },
+  {
+    "rule_id": "CONS-123",
+    "name": "一致性：文本中的单位写法与表格一致（hm²/m²、m³/万m³）",
+    "review_type": "UNIT_INCONSISTENT",
+    "category_code": "UNIT_INCONSISTENT",
+    "field_key": "unit_text_table_match",
+    "field_label": "单位一致性",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "hm²",
+          "m²",
+          "m³",
+          "万m³",
+          "万元",
+          "元"
+        ]
+      },
+      {
+        "where": "table",
+        "hints": [
+          "单位",
+          "hm²",
+          "m²",
+          "m³",
+          "万元"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "unit_check",
+      "cross_ref": true
+    },
+    "severity": "medium",
+    "priority": 55,
+    "message_tpl": "【单位不一致】正文与表格单位口径可能不一致：{detail}",
+    "fix_hint_tpl": "统一单位写法与换算（必要时在正文注明“单位同表X.X-X”）。"
+  },
+  {
+    "rule_id": "CONS-124",
+    "name": "AI合规差距：监测点位应对应方法/频次/指标闭合（点-法-频）",
+    "review_type": "AI_COMPLIANCE_GAP",
+    "category_code": "AI_COMPLIANCE_GAP",
+    "field_key": "monitor_point_method_freq_closure",
+    "field_label": "监测体系闭合",
+    "extract_targets": [
+      {
+        "where": "table",
+        "hints": [
+          "表6.3-1",
+          "监测点",
+          "监测方法"
+        ]
+      },
+      {
+        "where": "table",
+        "hints": [
+          "表6.2-1",
+          "监测频次"
+        ]
+      },
+      {
+        "where": "section",
+        "hints": [
+          "6.2.2",
+          "监测方法"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "ai_gap_check",
+      "conditions": [
+        "points_defined()",
+        "methods_defined()",
+        "freq_defined()",
+        "not_closed_mapping()"
+      ]
+    },
+    "severity": "medium",
+    "priority": 70,
+    "message_tpl": "【合规差距】监测点-方法-频次未形成闭合映射（表6.3-1/表6.2-1/6.2.2之间）。",
+    "fix_hint_tpl": "为每个监测点明确：监测内容、方法、频次、记录表单，并在章节中一致呈现。"
+  },
+  {
+    "rule_id": "CONS-125",
+    "name": "格式：全书英文括号/中文括号一致（统一风格）",
+    "review_type": "FORMAT",
+    "category_code": "FORMAT_REVIEW",
+    "field_key": "paren_style_unify",
+    "field_label": "括号风格",
+    "extract_targets": [
+      {
+        "where": "section",
+        "hints": [
+          "（",
+          "）",
+          "(",
+          ")"
+        ]
+      },
+      {
+        "where": "table",
+        "hints": [
+          "（",
+          "）",
+          "(",
+          ")"
+        ]
+      }
+    ],
+    "normalize": [
+      "trim"
+    ],
+    "compare": {
+      "mode": "punctuation_check",
+      "style_unify": true
+    },
+    "severity": "low",
+    "priority": 25,
+    "message_tpl": "【格式】括号风格混用（中文括号/英文括号）。",
+    "fix_hint_tpl": "按模板统一：正文一般用中文括号（），单位/公式建议用英文括号()，同类场景保持一致。"
+  }
+]

@@ -7,9 +7,11 @@ import json
 import logging
 import os
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
+import time
 from pathlib import Path
 
 from docx import Document as DocxDocument
@@ -64,370 +66,107 @@ def _download_to_bytes(storage, object_key: str) -> bytes:
 
 
 def convert_docx_to_pdf(version_id: int) -> None:
-    log_step(version_id, "DOCX转PDF", "开始下载源文件")
     v, doc = _version_doc(version_id)
     project_id, document_id = doc["project_id"], v["document_id"]
     version_no = v["version_no"]
     key_base = _key_base(project_id, document_id, version_no)
-    source_key = f"{key_base}/source.docx"
 
     fo = get_file_object(v["source_file_id"])
     if not fo:
         raise ValueError(f"Source file_object not found for version {version_id}, source_file_id={v.get('source_file_id')}")
-    
     object_key = fo.get("object_key")
     if not object_key or object_key == "NULL" or object_key.upper() == "NULL":
-        raise ValueError(
-            f"Invalid object_key for version {version_id}: "
-            f"source_file_id={v.get('source_file_id')}, "
-            f"file_object_id={fo.get('id')}, "
-            f"object_key={object_key}"
-        )
-    
+        raise ValueError(f"Invalid object_key for version {version_id}")
     storage = get_storage()
-    log_step(version_id, "DOCX转PDF", f"下载源文件: {object_key}")
     docx_bytes = _download_to_bytes(storage, object_key)
-    
     if not docx_bytes or len(docx_bytes) == 0:
         raise ValueError(f"Downloaded file is empty for version {version_id}, object_key={object_key}")
-    log_step(version_id, "DOCX转PDF", f"源文件大小: {len(docx_bytes)} 字节")
 
-    log_step(version_id, "DOCX转PDF", "开始转换（使用LibreOffice）")
-    with tempfile.TemporaryDirectory() as tmpdir:
+    base_temp = os.environ.get("TMP", os.environ.get("TEMP", tempfile.gettempdir()))
+    base_temp = os.path.abspath(base_temp)
+    if os.path.exists(base_temp) and not os.path.isdir(base_temp):
+        base_temp = os.path.dirname(base_temp) or tempfile.gettempdir()
+    os.makedirs(base_temp, exist_ok=True)
+    keep_temp = os.environ.get("DEBUG_KEEP_TEMP", "").strip() in ("1", "true", "yes")
+    tmpdir = tempfile.mkdtemp(dir=base_temp)
+    try:
+        tmpdir = str(Path(tmpdir).resolve())
         docx_path = Path(tmpdir) / "source.docx"
         docx_path.write_bytes(docx_bytes)
-        log_step(version_id, "DOCX转PDF", f"临时文件路径: {docx_path}")
-        
-        # LibreOffice: --headless --convert-to pdf --outdir <dir> <file>
-        cmd = [
-            "soffice",
-            "--headless",
-            "--nodefault",
-            "--nolockcheck",
-            "--convert-to", "pdf",
-            "--outdir", tmpdir,
-            str(docx_path),
-        ]
-        result = None
-        soffice_path = None
-        soffice_dir = None
-        
-        # 尝试查找 soffice.exe 可执行文件（Windows 上必须使用 .exe）
-        import shutil
+        profile_dir = Path(tmpdir) / "lo-profile"
+        profile_dir.mkdir(parents=True, exist_ok=True)
+        profile_path_slash = str(profile_dir.resolve()).replace("\\", "/")
+        user_installation_url = f"file:///{profile_path_slash}"
+
         if sys.platform == "win32":
-            # Windows: 优先查找 .exe 文件
-            soffice_path = shutil.which("soffice.exe")
-            if not soffice_path:
-                # 尝试常见安装路径
-                common_paths = [
+            soffice_path = shutil.which("soffice.exe") or next(
+                (p for p in [
                     r"C:\Program Files\LibreOffice\program\soffice.exe",
                     r"C:\Program Files (x86)\LibreOffice\program\soffice.exe",
                     os.path.expanduser(r"~\AppData\Local\Programs\LibreOffice\program\soffice.exe"),
-                ]
-                for path in common_paths:
-                    if os.path.exists(path):
-                        soffice_path = path
-                        break
+                ] if os.path.exists(p)), None
+            )
         else:
-            # Linux/Mac: 查找 soffice
             soffice_path = shutil.which("soffice")
-        
-        if not soffice_path:
-            raise RuntimeError(
-                f"LibreOffice (soffice) not found. "
-                f"Please install LibreOffice. "
-                f"On Windows, expected paths: "
-                f"C:\\Program Files\\LibreOffice\\program\\soffice.exe"
-            )
-        
-        # 确保使用 .exe 文件（Windows）
-        if sys.platform == "win32" and not soffice_path.endswith(".exe"):
-            # 如果找到的是 .COM 或其他，尝试在同一目录找 .exe
-            base_path = Path(soffice_path).parent
-            exe_path = base_path / "soffice.exe"
-            if exe_path.exists():
-                soffice_path = str(exe_path)
-            else:
-                logger.warning(f"[版本 {version_id}] 找到的路径不是 .exe: {soffice_path}，尝试使用 .exe")
-        
-        # 获取 LibreOffice program 目录（用于设置工作目录和环境变量）
+        if not soffice_path or not os.path.exists(soffice_path):
+            raise RuntimeError("LibreOffice (soffice) not found. Install LibreOffice.")
         soffice_dir = str(Path(soffice_path).parent)
-        libreoffice_base = str(Path(soffice_path).parent.parent)
-        cmd[0] = soffice_path
-        
-        # 验证 LibreOffice 路径和目录是否存在
-        if not os.path.exists(soffice_path):
-            raise RuntimeError(f"LibreOffice 可执行文件不存在: {soffice_path}")
-        if not os.path.exists(soffice_dir):
-            raise RuntimeError(f"LibreOffice program 目录不存在: {soffice_dir}")
-        if not os.path.exists(libreoffice_base):
-            raise RuntimeError(f"LibreOffice 基础目录不存在: {libreoffice_base}")
-        
-        log_step(version_id, "DOCX转PDF", f"使用LibreOffice路径: {soffice_path}")
-        log_step(version_id, "DOCX转PDF", f"LibreOffice目录: {soffice_dir}")
-        log_step(version_id, "DOCX转PDF", f"LibreOffice基础目录: {libreoffice_base}")
-        
-        # 设置环境变量（LibreOffice 需要这些）
-        env = os.environ.copy()
-        fundamentalrc_path = None  # 初始化变量，用于错误处理
-        if sys.platform == "win32":
-            # 添加 program 目录到 PATH（确保 LibreOffice DLL 可以被找到）
-            # 同时添加基础目录，因为某些 DLL 可能在基础目录中
-            path_parts = [soffice_dir, str(Path(libreoffice_base).resolve())]
-            if "PATH" in env:
-                env["PATH"] = os.pathsep.join(path_parts) + os.pathsep + env["PATH"]
-            else:
-                env["PATH"] = os.pathsep.join(path_parts)
-            
-            # Windows: 设置 URE_BOOTSTRAP 指向 LibreOffice 的配置
-            # 尝试多种格式以确保兼容性
-            fundamentalrc_path = Path(libreoffice_base) / "program" / "fundamentalrc"
-            if fundamentalrc_path.exists():
-                abs_path = str(fundamentalrc_path.resolve())
-                # 尝试使用正斜杠格式（某些版本需要）
-                abs_path_slash = abs_path.replace("\\", "/")
-                # 先尝试正斜杠格式
-                env["URE_BOOTSTRAP"] = f"vnd.sun.star.pathname:{abs_path_slash}"
-                logger.info(f"[版本 {version_id}] 设置 URE_BOOTSTRAP: {env['URE_BOOTSTRAP']}")
-            else:
-                # 如果文件不存在，不设置 URE_BOOTSTRAP，让 LibreOffice 自动检测
-                logger.warning(f"[版本 {version_id}] fundamentalrc 文件不存在 ({fundamentalrc_path})，不设置 URE_BOOTSTRAP（让 LibreOffice 自动检测）")
-                # 不设置 URE_BOOTSTRAP，某些版本的 LibreOffice 可以自动检测
-            
-            # 设置其他可能需要的环境变量
-            env["TMP"] = os.environ.get("TMP", os.environ.get("TEMP", tempfile.gettempdir()))
-            env["TEMP"] = env["TMP"]
-            
-            # 设置 LibreOffice 相关的环境变量
-            # SAL_USE_VCLPLUGIN 可以设置为 gen 或 gtk3（Windows 上通常不需要）
-            # 但设置它可能有助于某些配置
-            if "SAL_USE_VCLPLUGIN" not in env:
-                env["SAL_USE_VCLPLUGIN"] = "gen"
-        
-        # 验证 LibreOffice 是否可以运行（简单测试）
-        try:
-            test_result = subprocess.run(
-                [soffice_path, "--version"],
-                capture_output=True,
-                text=True,
-                timeout=10,
-                cwd=soffice_dir,
-                env=env
-            )
-            if test_result.returncode != 0:
-                logger.warning(f"[版本 {version_id}] LibreOffice 版本检查失败: {test_result.stderr}")
-        except Exception as e:
-            logger.warning(f"[版本 {version_id}] 无法验证 LibreOffice 版本: {e}")
-        
-        # Windows 错误代码
-        ACCESS_VIOLATION_CODE = 3221226505  # 0xC0000005
-        CPP_EXCEPTION_CODE = 3765269347  # 0xE06D7363 (C++ exception)
-        
-        try:
-            # 使用绝对路径，设置工作目录为 LibreOffice program 目录
-            cmd_abs = [str(Path(cmd[0]).resolve())] + cmd[1:]
-            logger.info(f"[版本 {version_id}] 执行命令: {' '.join(cmd_abs)}")
-            logger.info(f"[版本 {version_id}] 工作目录: {soffice_dir}")
-            logger.info(f"[版本 {version_id}] 输出目录: {tmpdir}")
-            
-            result = subprocess.run(
-                cmd_abs,
-                capture_output=True,
-                text=True,
-                timeout=120,
-                cwd=soffice_dir,  # 设置工作目录
-                env=env  # 使用修改后的环境变量
-            )
-            
-            # 如果是 Windows 错误（访问冲突或 C++ 异常），尝试使用不同的配置
-            if sys.platform == "win32" and result.returncode in (ACCESS_VIOLATION_CODE, CPP_EXCEPTION_CODE):
-                error_type = "C++ 异常" if result.returncode == CPP_EXCEPTION_CODE else "访问冲突"
-                logger.warning(f"[版本 {version_id}] 标准方式失败 ({error_type})，尝试替代配置...")
-                
-                # 尝试多种替代配置
-                retry_configs = [
-                    {
-                        "name": "不设置 URE_BOOTSTRAP，使用输出目录",
-                        "set_ure": False,
-                        "cwd": tmpdir
-                    },
-                    {
-                        "name": "不设置 URE_BOOTSTRAP，使用当前目录",
-                        "set_ure": False,
-                        "cwd": os.getcwd()
-                    },
-                    {
-                        "name": "设置 URE_BOOTSTRAP，使用输出目录",
-                        "set_ure": True,
-                        "cwd": tmpdir
-                    }
-                ]
-                
-                for config in retry_configs:
-                    alt_env = os.environ.copy()
-                    
-                    # 必须设置 PATH 以便找到 DLL（包括基础目录）
-                    path_parts = [soffice_dir, str(Path(libreoffice_base).resolve())]
-                    if "PATH" in alt_env:
-                        alt_env["PATH"] = os.pathsep.join(path_parts) + os.pathsep + alt_env["PATH"]
-                    else:
-                        alt_env["PATH"] = os.pathsep.join(path_parts)
-                    
-                    # 根据配置决定是否设置 URE_BOOTSTRAP
-                    if config["set_ure"]:
-                        fundamentalrc_path = Path(libreoffice_base) / "program" / "fundamentalrc"
-                        if fundamentalrc_path.exists():
-                            abs_path = str(fundamentalrc_path.resolve())
-                            abs_path_slash = abs_path.replace("\\", "/")
-                            alt_env["URE_BOOTSTRAP"] = f"vnd.sun.star.pathname:{abs_path_slash}"
-                    
-                    # 设置临时目录
-                    alt_env["TMP"] = os.environ.get("TMP", os.environ.get("TEMP", tempfile.gettempdir()))
-                    alt_env["TEMP"] = alt_env["TMP"]
-                    
-                    # 设置 SAL_USE_VCLPLUGIN
-                    if "SAL_USE_VCLPLUGIN" not in alt_env:
-                        alt_env["SAL_USE_VCLPLUGIN"] = "gen"
-                    
-                    logger.info(f"[版本 {version_id}] 重试: {config['name']}")
-                    result = subprocess.run(
-                        cmd_abs,
-                        capture_output=True,
-                        text=True,
-                        timeout=120,
-                        cwd=config["cwd"],
-                        env=alt_env
-                    )
-                    
-                    # 如果成功（返回码为0且没有错误信息），跳出循环
-                    if result.returncode == 0 and not (result.stderr and any(keyword in result.stderr.lower() for keyword in ["error", "could not", "failed", "cannot", "could not find platform"])):
-                        logger.info(f"[版本 {version_id}] 替代配置成功: {config['name']}")
-                        break
-                
-        except subprocess.TimeoutExpired:
-            raise RuntimeError("LibreOffice conversion timeout (exceeded 120 seconds)")
-        except Exception as e:
-            raise RuntimeError(f"LibreOffice 执行异常: {str(e)}")
-        
-        # 记录详细的执行信息
-        log_step(version_id, "DOCX转PDF", f"LibreOffice返回码: {result.returncode}")
-        if result.stdout:
-            logger.info(f"[版本 {version_id}] LibreOffice stdout: {result.stdout[:500]}")
-        if result.stderr:
-            logger.warning(f"[版本 {version_id}] LibreOffice stderr: {result.stderr[:500]}")
-        
-        # Windows 错误代码映射
-        windows_error_codes = {
-            3221226505: "访问冲突 (Access Violation) - 可能是 LibreOffice 路径或环境变量配置问题",
-            3221225477: "找不到指定的模块 - 可能是缺少 DLL 依赖",
-            3221225794: "应用程序无法正常启动 - 可能是权限或配置问题",
-            3765269347: "C++ 异常 (0xE06D7363) - LibreOffice 内部异常，可能是安装不完整或配置问题",
-        }
-        
-        # 检查是否有错误（即使返回码为0，stderr中有错误也视为失败）
-        has_error = False
-        error_msg = ""
-        if result.returncode != 0:
-            has_error = True
-            error_msg = result.stderr or result.stdout or "Unknown error"
-            
-            # 如果是 Windows 错误代码，添加更详细的说明
-            if sys.platform == "win32" and result.returncode in windows_error_codes:
-                error_msg = f"{windows_error_codes[result.returncode]}\n原始错误: {error_msg}"
-                error_msg += f"\n\n诊断信息:"
-                error_msg += f"\n- LibreOffice 路径: {soffice_path}"
-                error_msg += f"\n- LibreOffice 基础目录: {libreoffice_base}"
-                if fundamentalrc_path:
-                    error_msg += f"\n- fundamentalrc 文件存在: {fundamentalrc_path.exists()}"
-                    error_msg += f"\n- fundamentalrc 文件路径: {fundamentalrc_path}"
-                else:
-                    error_msg += f"\n- fundamentalrc 文件路径: 未检查（非 Windows 系统）"
-                error_msg += f"\n- URE_BOOTSTRAP: {env.get('URE_BOOTSTRAP', '未设置')}"
-                error_msg += f"\n- 工作目录: {soffice_dir}"
-                error_msg += f"\n\n诊断建议:"
-                if result.returncode == CPP_EXCEPTION_CODE:
-                    error_msg += f"\n1. C++ 异常通常表示 LibreOffice 安装不完整或损坏"
-                    error_msg += f"\n2. 检查 {libreoffice_base}/program/ 目录是否包含所有必要文件"
-                    error_msg += f"\n3. 尝试重新安装 LibreOffice（建议使用最新版本）"
-                    error_msg += f"\n4. 检查是否有多个 LibreOffice 版本冲突"
-                    error_msg += f"\n5. 运行诊断脚本: 检查LibreOffice配置.bat"
-                else:
-                    error_msg += f"\n1. 确认 LibreOffice 已正确安装: {soffice_path}"
-                    error_msg += f"\n2. 检查 LibreOffice 版本兼容性（建议使用 7.x 或更高版本）"
-                    error_msg += f"\n3. 尝试手动运行命令: {' '.join(cmd_abs)}"
-                    error_msg += f"\n4. 检查文件权限和防病毒软件是否阻止了 LibreOffice"
-        elif result.stderr and any(keyword in result.stderr.lower() for keyword in ["error", "could not", "failed", "cannot"]):
-            has_error = True
-            error_msg = result.stderr
-            
-            # 针对特定错误提供诊断建议
-            if "could not find platform independent libraries" in result.stderr.lower():
-                error_msg += f"\n\n诊断信息:"
-                error_msg += f"\n- LibreOffice 无法找到其运行时库"
-                error_msg += f"\n- URE_BOOTSTRAP: {env.get('URE_BOOTSTRAP', '未设置')}"
-                error_msg += f"\n- LibreOffice 路径: {soffice_path}"
-                error_msg += f"\n- LibreOffice 基础目录: {libreoffice_base}"
-                error_msg += f"\n- 工作目录: {soffice_dir}"
-                error_msg += f"\n\n建议:"
-                error_msg += f"\n1. 确认 LibreOffice 安装完整（检查 {libreoffice_base}/program/fundamentalrc 是否存在）"
-                error_msg += f"\n2. 尝试重新安装 LibreOffice"
-                error_msg += f"\n3. 检查是否有多个 LibreOffice 版本冲突"
-            elif "source file could not be loaded" in result.stderr.lower():
-                error_msg += f"\n\n诊断信息:"
-                error_msg += f"\n- 源文件路径: {docx_path}"
-                error_msg += f"\n- 源文件是否存在: {docx_path.exists()}"
-                error_msg += f"\n- 源文件大小: {docx_path.stat().st_size if docx_path.exists() else 'N/A'} 字节"
-                error_msg += f"\n\n建议:"
-                error_msg += f"\n1. 检查 DOCX 文件是否损坏"
-                error_msg += f"\n2. 确认文件路径正确且可访问"
-                error_msg += f"\n3. 检查文件权限"
-        
-        if has_error:
-            raise RuntimeError(f"LibreOffice conversion failed (returncode={result.returncode}): {error_msg}")
 
-        # 检查PDF文件是否存在（LibreOffice可能使用不同的文件名）
+        cmd = [
+            soffice_path,
+            "-env:UserInstallation=" + user_installation_url,
+            "--headless", "--invisible", "--nologo", "--norestore",
+            "--convert-to", "pdf:writer_pdf_Export",
+            "--outdir", tmpdir,
+            str(docx_path),
+        ]
+        env = os.environ.copy()
+        creationflags = 0
+        if sys.platform == "win32":
+            env["PATH"] = os.pathsep.join([soffice_dir, str(Path(soffice_path).parent.parent)]) + os.pathsep + env.get("PATH", "")
+            env.setdefault("TMP", tempfile.gettempdir())
+            env.setdefault("TEMP", env["TMP"])
+            creationflags = getattr(subprocess, "CREATE_NO_WINDOW", 0x08000000)
+
+        proc = subprocess.Popen(
+            cmd,
+            cwd=soffice_dir,
+            env=env,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            **({"creationflags": creationflags} if creationflags else {}),
+        )
         pdf_path = Path(tmpdir) / "source.pdf"
-        if not pdf_path.exists():
-            # 列出临时目录中的所有PDF文件，用于诊断
-            pdf_files = list(Path(tmpdir).glob("*.pdf"))
-            all_files = list(Path(tmpdir).iterdir())
-            logger.error(f"[版本 {version_id}] PDF文件不存在。临时目录内容: {[f.name for f in all_files]}")
-            logger.error(f"[版本 {version_id}] 找到的PDF文件: {[f.name for f in pdf_files]}")
-            
-            # 如果找到了其他PDF文件，尝试使用第一个
-            if pdf_files:
-                pdf_path = pdf_files[0]
-                logger.warning(f"[版本 {version_id}] 使用找到的PDF文件: {pdf_path.name}")
-            else:
-                # 等待一小段时间，可能文件还在写入
-                import time
-                time.sleep(1)
-                pdf_files = list(Path(tmpdir).glob("*.pdf"))
-                if pdf_files:
-                    pdf_path = pdf_files[0]
-                    logger.warning(f"[版本 {version_id}] 延迟后找到PDF文件: {pdf_path.name}")
-                else:
-                    # 构建详细的错误信息
-                    error_details = []
-                    error_details.append(f"Returncode: {result.returncode}")
-                    if result.stdout:
-                        error_details.append(f"Stdout: {result.stdout[:500]}")
-                    if result.stderr:
-                        error_details.append(f"Stderr: {result.stderr[:500]}")
-                    error_details.append(f"Files in temp dir: {[f.name for f in all_files]}")
-                    error_details.append(f"LibreOffice path: {soffice_path}")
-                    error_details.append(f"Working directory: {soffice_dir}")
-                    
-                    raise RuntimeError(
-                        f"LibreOffice did not produce PDF. " + " | ".join(error_details)
-                    )
-        
+        for _ in range(12):
+            time.sleep(5)
+            if pdf_path.exists():
+                try:
+                    proc.terminate()
+                    proc.wait(timeout=5)
+                except (subprocess.TimeoutExpired, ProcessLookupError):
+                    pass
+                break
+        else:
+            try:
+                proc.terminate()
+                proc.wait(timeout=5)
+            except (subprocess.TimeoutExpired, ProcessLookupError):
+                try:
+                    proc.kill()
+                except ProcessLookupError:
+                    pass
+            raise RuntimeError("LibreOffice conversion failed: no PDF within 60 seconds")
+
         pdf_bytes = pdf_path.read_bytes()
         if len(pdf_bytes) == 0:
-            raise RuntimeError(f"Generated PDF file is empty: {pdf_path}")
-        log_step(version_id, "DOCX转PDF", f"转换完成，PDF大小: {len(pdf_bytes)} 字节")
+            raise RuntimeError("Generated PDF file is empty")
+    finally:
+        if not keep_temp and tmpdir and os.path.isdir(tmpdir):
+            try:
+                shutil.rmtree(tmpdir, ignore_errors=True)
+            except Exception:
+                pass
 
-    log_step(version_id, "DOCX转PDF", "上传PDF到存储")
     pdf_key = f"{key_base}/preview.pdf"
     storage.put(pdf_key, io.BytesIO(pdf_bytes), content_type="application/pdf", size=len(pdf_bytes))
 
@@ -436,7 +175,6 @@ def convert_docx_to_pdf(version_id: int) -> None:
         filename="preview.pdf", content_type="application/pdf", size=len(pdf_bytes),
     )
     set_version_pdf_file(version_id, file_id)
-    log_step(version_id, "DOCX转PDF", "✅ 完成")
 
 
 def _parse_number(s: str) -> tuple[float | None, str | None]:
@@ -622,23 +360,15 @@ def parse_docx_structure(version_id: int) -> None:
                     logger.warning(f"[版本 {version_id}] 跳过连续重复标题: {title} (level={level}, parent_id={parent_id})")
                     continue
                 
-                # 去重策略2：检测重复的大纲序列（目录页重复）
-                # 如果已插入的标题序列包含当前标题，且当前标题与序列开头的几个标题匹配，则可能是重复
-                if len(inserted_titles_sequence) >= 3:
-                    # 检查当前标题是否与已插入序列的前3个标题中的任何一个匹配
-                    if title in inserted_titles_sequence[:3]:
-                        # 如果我们在目录页区域，或者当前标题与序列开头匹配，则跳过
-                        if in_toc_section:
-                            logger.warning(f"[版本 {version_id}] 跳过目录页中的重复标题: {title}")
-                            continue
-                        # 如果当前标题与序列的第一个标题匹配，且序列长度>=5，可能是重复大纲
-                        if title == inserted_titles_sequence[0] and len(inserted_titles_sequence) >= 5:
-                            logger.warning(f"[版本 {version_id}] 跳过重复大纲序列的开头标题: {title}")
-                            continue
-                
-                # 去重策略3：如果在目录页区域，且已插入过相同标题，则跳过
+                # 去重策略2：目录页内重复标题一律跳过
                 if in_toc_section and title in inserted_titles_sequence:
                     logger.warning(f"[版本 {version_id}] 跳过目录页中的重复标题: {title}")
+                    continue
+                
+                # 去重策略3：检测整段重复大纲（如正文前段 2~8 后，再出现 1,2,3...8 整段重复）
+                # 若已插入的标题较多，且当前标题已在前 15 个中出现过，视为重复段并跳过
+                if len(inserted_titles_sequence) >= 5 and title in inserted_titles_sequence[:15]:
+                    logger.warning(f"[版本 {version_id}] 跳过重复大纲段落中的标题: {title}")
                     continue
                 sql = f"""
                 INSERT INTO {_schema}.doc_outline_node (version_id, node_no, title, level, parent_id, order_index)
@@ -1420,36 +1150,30 @@ def finalize_ready(version_id: int) -> None:
     update_version_status(version_id, "READY", error_message=None, progress=100, current_step="已完成")
     log_step(version_id, "完成处理", "✅ 版本处理完成")
     
-    # 自动触发规则审查（如果启用）
+    # 仅触发 AI 规则校验（不执行旧规则引擎 RULE/checkpoint）。若日志仍出现 CONSISTENCY_BASIC/sum_mismatch 等，请重启 Celery Worker。
     if settings.AUTO_TRIGGER_REVIEW:
         try:
             from ..services.review_run_service import create_review_run
-            from ..worker.review_tasks import run_rule_review_task
+            from ..worker.ai_review_tasks import run_ai_review_task
             from ..utils.celery_diagnostics import can_use_celery
-            
-            log_step(version_id, "完成处理", "自动触发规则审查")
-            
-            # 创建审查运行
-            run_id = create_review_run(version_id, "RULE")
+
+            log_step(version_id, "完成处理", "自动触发 AI 规则校验")
+            run_id = create_review_run(version_id, "AI")
             logger.info(f"[版本 {version_id}] 已创建审查运行，运行ID: {run_id}")
-            
-            # 检查是否可以使用 Celery
+
             if can_use_celery():
-                # 使用 Celery 异步执行
-                run_rule_review_task.delay(version_id, run_id)
-                logger.info(f"[版本 {version_id}] 规则审查任务已提交到 Celery")
+                run_ai_review_task.delay(version_id, run_id)
+                logger.info(f"[版本 {version_id}] AI 规则校验任务已提交到 Celery")
             else:
-                # Celery 不可用时，直接执行（同步）
                 logger.warning(f"[版本 {version_id}] Celery Worker 不可用，使用直接执行模式")
-                from ..worker.review_tasks import _execute_rule_review
-                _execute_rule_review(version_id, run_id, publish_events=False)
-                logger.info(f"[版本 {version_id}] 规则审查任务已完成（直接执行）")
-            
-            log_step(version_id, "完成处理", "✅ 已自动触发规则审查")
+                from ..worker.ai_review_tasks import _execute_ai_review
+                _execute_ai_review(version_id, run_id)
+                logger.info(f"[版本 {version_id}] AI 规则校验任务已完成（直接执行）")
+
+            log_step(version_id, "完成处理", "✅ 已自动触发 AI 规则校验")
         except Exception as e:
-            # 审查触发失败不应该影响版本状态
-            logger.error(f"[版本 {version_id}] 自动触发规则审查失败: {e}", exc_info=True)
-            log_step(version_id, "完成处理", f"⚠️ 自动触发规则审查失败: {e}")
+            logger.error(f"[版本 {version_id}] 自动触发 AI 规则校验失败: {e}", exc_info=True)
+            log_step(version_id, "完成处理", f"⚠️ 自动触发 AI 规则校验失败: {e}")
     else:
         logger.info(f"[版本 {version_id}] 自动触发审查已禁用（AUTO_TRIGGER_REVIEW=False）")
         log_step(version_id, "完成处理", "自动触发审查已禁用")

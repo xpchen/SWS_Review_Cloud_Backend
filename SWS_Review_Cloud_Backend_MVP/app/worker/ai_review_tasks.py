@@ -1,358 +1,377 @@
 """
-AI审查任务：按checkpoint分章节审查，证据校验，结构化输出
+AI 审查任务：全部使用规则校验引擎（AI），基于文档内容与规范库输出校验结果。
+- 单次请求最多重试 3 次后视为失败
+- 允许 2～3 批并发请求
+- 失败的批次规则重新加入处理队列再跑一轮
 """
 import json
 import logging
 import re
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from .. import db
 from ..settings import settings
 from ..services.review_run_service import get_review_run, update_run_status, insert_issue
-from ..ai.rag import search_chunks
-from ..ai.prompts import build_review_messages
+from ..ai.rule_engine_prompt import load_norm_lib, get_rule_batches, build_rule_engine_messages_batch
 from ..ai.qwen_client import chat_json
 from .app import app
 
 _schema = settings.DB_SCHEMA
 logger = logging.getLogger(__name__)
 
+# 单次请求最多重试次数，超过则视为该批失败
+MAX_REQUEST_RETRIES = 3
+# 并发批次数（2～3）
+CONCURRENT_BATCHES = 3
+
+# 问题类型枚举（AI/用户） -> 库内 issue_type（含 sum_check_row/col、percentage_sum、punctuation、missing_section、ai_gap 等）
+ISSUE_TYPE_MAP = {
+    "一致性": "CONSISTENCY",
+    "格式": "FORMAT",
+    "表内计算": "SUM_MISMATCH_ROW",
+    "合计行": "SUM_MISMATCH_ROW",
+    "合计列": "SUM_MISMATCH_COL",
+    "百分比合计": "PERCENTAGE_SUM_MISMATCH",
+    "业务逻辑": "BUSINESS_LOGIC",
+    "规范引用": "CONTENT",
+    "信息缺失": "MISSING_SECTION",
+    "术语规范": "FORMAT",
+    "标点": "FORMAT",
+    "缺失章节": "MISSING_SECTION",
+    "单位不一致": "UNIT_INCONSISTENT",
+    "公式平衡": "FORMULA_BALANCE_MISMATCH",
+    "AI合规差距": "AI_COMPLIANCE_GAP",
+}
+
+# review_type（规范库）-> 统计用 形式/技术；形式审查=FORMAT+CONTENT 等，技术审查=其余
+REVIEW_TYPE_FORM_TECH = ("FORM", "TECH")
+FORM_REVIEW_TYPES = frozenset({"FORMAT", "CONTENT"})
+
+# 严重程度（用户） -> 库内 severity
+SEVERITY_MAP = {
+    "致命": "S1",
+    "高": "S2",
+    "中": "S3",
+    "低": "INFO",
+}
+
+
+def _run_one_batch_with_retries(doc_content: str, rules_batch: list, batch_index: int, total_batches: int):
+    """
+    执行单批 AI 请求，最多重试 MAX_REQUEST_RETRIES 次。
+    返回 (rules_batch, out_dict or None)，失败时 out 为 None。
+    """
+    messages = build_rule_engine_messages_batch(
+        doc_content, rules_batch, batch_index, total_batches
+    )
+    for attempt in range(MAX_REQUEST_RETRIES):
+        try:
+            out = chat_json(messages)
+            return (rules_batch, out)
+        except Exception as e:
+            logger.warning(
+                f"AI batch {batch_index + 1}/{total_batches} attempt {attempt + 1}/{MAX_REQUEST_RETRIES} failed: {e}"
+            )
+    return (rules_batch, None)
+
+
+def _process_batch_result(out, blocks, version_id, run_id, rules_batch: list[dict]):
+    """解析单批 AI 返回的 JSON，写入 issues 表；review_type 来自本批规则，用于形式/技术统计。返回本批写入条数。"""
+    raw_issues = out.get("规则校验结果") or out.get("issues") or []
+    if not isinstance(raw_issues, list):
+        raw_issues = []
+    rule_by_id = {r.get("rule_id"): r for r in (rules_batch or []) if r.get("rule_id")}
+    count = 0
+    for item in raw_issues:
+        try:
+            rule_id = (item.get("rule_definition") or {}).get("rule_id") or item.get("checkpoint_code")
+            rule = rule_by_id.get(rule_id) if rule_id else None
+            mapped = _map_engine_issue_to_db(item, blocks, rule=rule)
+            if not mapped:
+                continue
+            insert_issue(
+                version_id=version_id,
+                run_id=run_id,
+                issue_type=mapped["issue_type"],
+                severity=mapped["severity"],
+                title=mapped["title"],
+                description=mapped["description"],
+                suggestion=mapped["suggestion"],
+                confidence=mapped.get("confidence", 0.7),
+                page_no=mapped.get("page_no"),
+                evidence_block_ids=mapped.get("evidence_block_ids") or [],
+                evidence_quotes=mapped.get("evidence_quotes") or [],
+                anchor_rects=None,
+                checkpoint_code=mapped.get("checkpoint_code"),
+                review_type=mapped.get("review_type"),
+            )
+            count += 1
+        except Exception as e:
+            logger.warning(f"Skip issue item: {e}", exc_info=False)
+    return count
+
 
 def _execute_ai_review(version_id: int, run_id: int):
     """
-    执行AI审查的核心逻辑（不依赖Celery装饰器）
-    
-    Args:
-        version_id: 版本ID
-        run_id: 审查运行ID
+    执行 AI 规则校验：按批请求，每批 5～7 条规则；单次请求最多重试 3 次；
+    允许 2～3 批并发；失败批次的规则重新入队再跑一轮。
     """
     run = get_review_run(run_id)
     if not run or run["version_id"] != version_id:
         return
-    
+
     update_run_status(run_id, "RUNNING", progress=0)
-    
-    # 获取所有AI类型的checkpoint
-    # 检查字段是否存在，向后兼容旧schema
-    try:
-        # 尝试查询包含新字段的完整查询
-        checkpoints = db.fetch_all(
-            f"""
-            SELECT id, code, name, category, review_category, engine_type, target_outline_prefix, prompt_template, rule_config_json
-            FROM {_schema}.review_checkpoint
-            WHERE enabled = true
-            AND (engine_type = 'AI' OR (engine_type IS NULL AND category = 'AI'))
-            ORDER BY order_index NULLS LAST, id
-            """,
-            {}
-        )
-    except Exception as e:
-        # 如果字段不存在，使用兼容旧schema的查询
-        if "review_category" in str(e) or "engine_type" in str(e):
-            logger.warning("新字段不存在，使用兼容旧schema的查询。请执行迁移006_checkpoint_schema_refactor.sql")
-            checkpoints = db.fetch_all(
-                f"""
-                SELECT id, code, name, category, category as review_category, 
-                       CASE WHEN category = 'AI' THEN 'AI' ELSE 'RULE' END as engine_type,
-                       target_outline_prefix, prompt_template, rule_config_json
-                FROM {_schema}.review_checkpoint
-                WHERE enabled = true
-                AND category = 'AI'
-                ORDER BY order_index NULLS LAST, id
-                """,
-                {}
-            )
-        else:
-            raise
-    
-    if not checkpoints:
-        logger.warning(f"No AI checkpoints found for version {version_id}")
+
+    blocks = _get_all_blocks_with_page(version_id)
+    if not blocks:
+        logger.warning(f"No blocks found for version {version_id}")
         update_run_status(run_id, "DONE", progress=100)
         return
-    
-    total_checkpoints = len(checkpoints)
+
+    doc_content = _build_doc_content(blocks)
+    norm_lib = load_norm_lib()
+    batches = get_rule_batches(norm_lib, batch_size=6)
+    total_batches = len(batches)
+
+    if total_batches == 0:
+        logger.warning("No rules in norm lib, skip AI review")
+        update_run_status(run_id, "DONE", progress=100)
+        return
+
+    logger.info(
+        f"[版本 {version_id}] 共 {len(norm_lib)} 条规则，分 {total_batches} 批请求（每批 5～7 条），并发 {CONCURRENT_BATCHES} 批"
+    )
+
     total_issues = 0
-    
-    for idx, checkpoint in enumerate(checkpoints):
-        checkpoint_code = checkpoint["code"]
-        checkpoint_name = checkpoint["name"]
-        target_prefix = checkpoint.get("target_outline_prefix")
-        prompt_template = checkpoint.get("prompt_template") or ""
-        rule_config = checkpoint.get("rule_config_json") or {}
-        
-        logger.info(f"Processing checkpoint {checkpoint_code} ({idx+1}/{total_checkpoints})")
-        
-        try:
-            issues = _run_checkpoint_ai_review(
-                version_id=version_id,
-                checkpoint_code=checkpoint_code,
-                checkpoint_name=checkpoint_name,
-                target_prefix=target_prefix,
-                prompt_template=prompt_template,
-                rule_config=rule_config,
-            )
-            
-            # 插入问题
-            for issue in issues:
-                insert_issue(
-                    version_id=version_id,
-                    run_id=run_id,
-                    issue_type=issue.get("issue_type", "AI_COMPLIANCE_GAP"),
-                    severity=issue.get("severity", "S2"),
-                    title=issue.get("title", "AI审查发现问题"),
-                    description=issue.get("description", ""),
-                    suggestion=issue.get("suggestion", ""),
-                    confidence=float(issue.get("confidence", 0.5)),
-                    page_no=issue.get("page_no", 1),
-                    evidence_block_ids=issue.get("evidence_block_ids", []),
-                    evidence_quotes=issue.get("evidence_quotes", []),
-                    anchor_rects=issue.get("anchor_rects"),
-                    checkpoint_code=checkpoint_code,
-                )
-                total_issues += 1
-            
-            progress = int((idx + 1) / total_checkpoints * 100)
-            update_run_status(run_id, "RUNNING", progress=progress)
-            
-        except Exception as e:
-            logger.error(f"Error processing checkpoint {checkpoint_code}: {e}", exc_info=True)
-            # 继续处理下一个checkpoint
-            continue
-    
+    failed_rules = []
+
+    def run_round(batches_list: list[list], round_name: str):
+        """并发执行多批（最多 CONCURRENT_BATCHES 批同时请求），收集成功条数与失败规则。"""
+        nonlocal total_issues
+        n_batches = len(batches_list)
+        round_issues = 0
+        round_failed = []
+        completed = 0
+        with ThreadPoolExecutor(max_workers=CONCURRENT_BATCHES) as executor:
+            futures = {
+                executor.submit(
+                    _run_one_batch_with_retries,
+                    doc_content,
+                    rb,
+                    batch_index,
+                    n_batches,
+                ): (batch_index, rb)
+                for batch_index, rb in enumerate(batches_list)
+            }
+            for fut in as_completed(futures):
+                batch_index, rules_batch = futures[fut]
+                try:
+                    _, out = fut.result()
+                except Exception as e:
+                    logger.error(f"Batch {batch_index + 1} error: {e}", exc_info=True)
+                    round_failed.extend(rules_batch)
+                    completed += 1
+                    update_run_status(run_id, "RUNNING", progress=int(completed / n_batches * 100))
+                    continue
+                if out is None:
+                    round_failed.extend(rules_batch)
+                    logger.warning(
+                        f"Batch {batch_index + 1}/{n_batches} failed after {MAX_REQUEST_RETRIES} retries"
+                    )
+                else:
+                    cnt = _process_batch_result(out, blocks, version_id, run_id, rules_batch)
+                    round_issues += cnt
+                    logger.info(
+                        f"[版本 {version_id}] {round_name} 第 {batch_index + 1}/{n_batches} 批完成，本批 {cnt} 条结果"
+                    )
+                completed += 1
+                update_run_status(run_id, "RUNNING", progress=int(completed / n_batches * 100))
+        total_issues += round_issues
+        return round_failed
+
+    failed_rules = run_round(batches, "首轮")
+
+    if failed_rules:
+        retry_batches = get_rule_batches(failed_rules, batch_size=6)
+        logger.info(f"[版本 {version_id}] 将 {len(failed_rules)} 条失败规则重新入队，分 {len(retry_batches)} 批重试")
+        run_round(retry_batches, "重试轮")
+        # 若重试轮仍有失败，仅打日志，不再无限重试
+        # （run_round 内未把“重试轮”的 failed 再收集，这里如需可再扩展）
+
     update_run_status(run_id, "DONE", progress=100)
-    logger.info(f"AI review completed: {total_issues} issues found")
+    logger.info(f"AI rule engine review completed: {total_batches} batches, {total_issues} issues found")
 
 
 @app.task(bind=True)
 def run_ai_review_task(self, version_id: int, run_id: int):
-    """Celery任务包装器"""
+    """Celery 任务包装"""
     _execute_ai_review(version_id, run_id)
 
 
-def _run_checkpoint_ai_review(
-    version_id: int,
-    checkpoint_code: str,
-    checkpoint_name: str,
-    target_prefix: str | None,
-    prompt_template: str,
-    rule_config: dict,
-) -> list[dict]:
-    """
-    执行单个checkpoint的AI审查
-    
-    返回：结构化问题列表
-    """
-    # 1. 获取目标章节的blocks
-    blocks = _get_target_blocks(version_id, target_prefix)
-    
-    if not blocks:
-        logger.warning(f"No blocks found for checkpoint {checkpoint_code} with prefix {target_prefix}")
-        return []
-    
-    # 2. 构建上下文（限制长度）
-    context = _build_context(blocks, max_length=rule_config.get("max_context_length", 8000))
-    
-    # 3. 检索相关规范条款
-    kb_keywords = rule_config.get("kb_keywords", checkpoint_name)
-    kb_refs = rule_config.get("kb_refs", [])
-    norm_chunks = _search_norm_chunks(kb_keywords, kb_refs, top_k=rule_config.get("top_k", 5))
-    
-    # 4. 构建prompt
-    messages = build_review_messages(
-        section_context=context,
-        norm_chunks=norm_chunks,
-        checkpoint_name=checkpoint_name,
-        prompt_template=prompt_template,
-    )
-    
-    # 5. 调用AI
-    try:
-        out = chat_json(messages)
-    except Exception as e:
-        logger.error(f"AI call failed for checkpoint {checkpoint_code}: {e}")
-        return []
-    
-    # 6. 验证和规范化输出
-    issues = out.get("issues") or []
-    validated_issues = []
-    
-    valid_chunk_ids = {c["id"] for c in norm_chunks}
-    blocks_by_id = {b["id"]: b for b in blocks}
-    
-    for item in issues:
-        validated = _validate_issue(item, blocks_by_id, valid_chunk_ids)
-        if validated:
-            validated_issues.append(validated)
-    
-    return validated_issues
-
-
-def _get_target_blocks(version_id: int, target_prefix: str | None) -> list[dict]:
-    """
-    根据target_outline_prefix获取目标章节的blocks
-    
-    target_prefix格式：如"1.2"表示只取1.2章节及其子章节
-    """
-    if not target_prefix:
-        # 没有指定前缀，返回所有段落块
-        return db.fetch_all(
-            f"""
-            SELECT b.id, b.text, b.order_index, b.outline_node_id, b.block_type
-            FROM {_schema}.doc_block b
-            WHERE b.version_id = %(v)s
-            AND b.block_type IN ('PARA', 'HEADING')
-            AND b.text IS NOT NULL
-            ORDER BY b.order_index
-            """,
-            {"v": version_id}
-        )
-    
-    # 查找匹配的outline节点
-    outline_nodes = db.fetch_all(
-        f"""
-        SELECT id, node_no, title
-        FROM {_schema}.doc_outline_node
-        WHERE version_id = %(v)s
-        AND (node_no LIKE %(prefix)s OR node_no = %(prefix_exact)s)
-        ORDER BY order_index
-        """,
-        {"v": version_id, "prefix": f"{target_prefix}.%", "prefix_exact": target_prefix}
-    )
-    
-    if not outline_nodes:
-        return []
-    
-    outline_ids = [n["id"] for n in outline_nodes]
-    
-    # 获取这些节点下的blocks
-    return db.fetch_all(
+def _get_all_blocks_with_page(version_id: int) -> list[dict]:
+    """获取版本下所有段落/标题块，并尽量带上页码。"""
+    blocks = db.fetch_all(
         f"""
         SELECT b.id, b.text, b.order_index, b.outline_node_id, b.block_type
         FROM {_schema}.doc_block b
         WHERE b.version_id = %(v)s
-        AND b.outline_node_id = ANY(%(ids)s)
         AND b.block_type IN ('PARA', 'HEADING')
         AND b.text IS NOT NULL
         ORDER BY b.order_index
         """,
-        {"v": version_id, "ids": outline_ids}
+        {"v": version_id},
     )
+    if not blocks:
+        return []
+    # 可选：从 doc_block_page_anchor 查页码，简化起见先用 order_index 估算或默认 1
+    block_ids = [b["id"] for b in blocks]
+    page_by_block = _get_page_by_blocks(version_id, block_ids)
+    for b in blocks:
+        b["page_no"] = page_by_block.get(b["id"], 1)
+    return blocks
 
 
-def _build_context(blocks: list[dict], max_length: int = 8000) -> str:
-    """
-    构建上下文文本，限制长度
-    每个block前标注block_id，便于AI引用
-    """
+def _get_page_by_blocks(version_id: int, block_ids: list[int]) -> dict[int, int]:
+    """根据 block 的 page_anchor 查页码。"""
+    if not block_ids:
+        return {}
+    try:
+        rows = db.fetch_all(
+            f"""
+            SELECT block_id, page_no
+            FROM {_schema}.doc_block_page_anchor
+            WHERE version_id = %(v)s AND block_id = ANY(%(ids)s)
+            """,
+            {"v": version_id, "ids": block_ids},
+        )
+        return {r["block_id"]: r["page_no"] for r in rows}
+    except Exception:
+        return {}
+
+
+def _build_doc_content(blocks: list[dict], max_chars: int = 100000) -> str:
+    """组装文档内容：每段带 [block_id=xx] 与页码，便于 AI 引用。"""
     parts = []
-    current_length = 0
-    
-    for block in blocks:
-        text = (block.get("text") or "").strip()
+    total = 0
+    for b in blocks:
+        text = (b.get("text") or "").strip()
         if not text:
             continue
-        
-        # 限制每个block的长度
-        block_text = text[:500] if len(text) > 500 else text
-        
-        # 标注block_id
-        block_id = block.get("id", 0)
-        annotated_text = f"[block_id={block_id}]\n{block_text}"
-        
-        if current_length + len(annotated_text) > max_length:
+        bid = b.get("id", 0)
+        pno = b.get("page_no", 1)
+        line = f"[block_id={bid}][page={pno}]\n{text[:2000]}"
+        if total + len(line) > max_chars:
             break
-        
-        parts.append(annotated_text)
-        current_length += len(annotated_text)
-    
+        parts.append(line)
+        total += len(line)
     return "\n\n".join(parts)
 
 
-def _search_norm_chunks(keywords: str, kb_refs: list[str], top_k: int = 5) -> list[dict]:
-    """检索规范条款chunks"""
-    # 如果指定了kb_refs，优先使用
-    if kb_refs:
-        # 按refs搜索
-        chunks = []
-        for ref in kb_refs[:top_k]:
-            ref_chunks = search_chunks(ref, top_k=1)
-            chunks.extend(ref_chunks)
-        return chunks[:top_k]
-    
-    # 否则用关键词搜索
-    return search_chunks(keywords, top_k=top_k)
-
-
-def _validate_issue(
-    item: dict,
-    blocks_by_id: dict[int, dict],
-    valid_chunk_ids: set[int],
-) -> dict | None:
+def _map_engine_issue_to_db(item: dict, blocks: list[dict], rule: dict | None = None) -> dict | None:
     """
-    验证AI输出的issue，确保：
-    1. evidence中的block_id存在
-    2. quote必须是block.text的子串
-    3. norm_refs中的kb_chunk_id必须有效
+    将规则引擎输出的一条问题映射为 insert_issue 所需格式。
+    - issue_title -> title
+    - issue_type -> 一致性/CONSISTENCY 等（含 sum_check_row/col、percentage_sum、punctuation、missing_section、ai_gap）
+    - severity -> 致命/S1 等
+    - location.page -> page_no
+    - evidence.snippets -> evidence_quotes
+    - fix_suggestion -> suggestion
+    - rule.review_type -> review_type（形式/技术统计用）
     """
-    evidence = item.get("evidence") or []
-    if not evidence:
-        return None  # 没有证据，丢弃
-    
-    validated_evidence = []
+    title = (item.get("issue_title") or item.get("title") or "审查发现问题").strip()[:255]
+    if not title:
+        return None
+
+    raw_type = (item.get("issue_type") or "").strip()
+    issue_type = ISSUE_TYPE_MAP.get(raw_type, "AI_COMPLIANCE_GAP")
+
+    raw_sev = (item.get("severity") or "").strip()
+    severity = SEVERITY_MAP.get(raw_sev, "S2")
+
+    loc = item.get("location") or {}
+    evidence = item.get("evidence") or {}
+    page_refs = evidence.get("page_refs") or []
+    if isinstance(page_refs, str):
+        page_refs = [page_refs]
+    # 页码优先：evidence.page_refs[0] -> location.page -> 匹配到的 block.page_no -> 1
+    page_no = None
+    if page_refs:
+        try:
+            p = page_refs[0]
+            page_no = int(p) if p is not None else None
+        except (TypeError, ValueError):
+            pass
+    if page_no is None:
+        page_no = loc.get("page")
+    if page_no is not None:
+        try:
+            page_no = int(page_no)
+        except (TypeError, ValueError):
+            page_no = None
+    if page_no is None and blocks:
+        # 用 anchor_text/snippet 匹配到的 block 的 page_no
+        snippets = evidence.get("snippets") or []
+        anchor_text = (loc.get("anchor_text") or "").strip() or (snippets[0] if snippets else "")
+        if anchor_text:
+            anchor_clean = re.sub(r"\s+", "", anchor_text)[:50]
+            for b in blocks:
+                t = (b.get("text") or "").strip()
+                if anchor_clean and re.sub(r"\s+", "", t)[:100].find(anchor_clean) >= 0:
+                    page_no = b.get("page_no", 1)
+                    break
+    if page_no is None:
+        page_no = 1
+
+    snippets = evidence.get("snippets") or []
+    if isinstance(snippets, str):
+        snippets = [snippets]
+    # evidence_quotes：前端展示用，传字符串列表或 [{"quote": s}]
+    evidence_quotes = [s[:500] if isinstance(s, str) else str(s)[:500] for s in snippets[:10]]
+
+    fix = item.get("fix_suggestion") or {}
+    if isinstance(fix, str):
+        suggestion = fix[:2000]
+    else:
+        steps = fix.get("fix_steps") or []
+        suggested = fix.get("suggested_text") or ""
+        suggestion = (suggested + "\n" + "\n".join(steps))[:2000].strip() or "请根据规范库与问题描述自行修正。"
+
+    desc_parts = [item.get("description") or item.get("issue_title") or title]
+    rule_def = item.get("rule_definition") or {}
+    if rule_def.get("rule_name"):
+        desc_parts.append(f"规则：{rule_def.get('rule_name')}")
+    norm = item.get("norm_basis") or {}
+    if norm.get("basis_text"):
+        desc_parts.append(f"依据：{norm.get('basis_text')}")
+    description = "\n".join(desc_parts)[:2000]
+
+    # 尝试用 anchor_text 或 snippet 匹配 block_id（用于证据定位；页码已在上面从 page_refs/location/block 取）
     evidence_block_ids = []
-    
-    for ev in evidence:
-        block_id = ev.get("block_id")
-        quote = ev.get("quote", "").strip()
-        
-        if not block_id or block_id not in blocks_by_id:
-            continue  # block_id无效，跳过这条证据
-        
-        block = blocks_by_id[block_id]
-        block_text = block.get("text") or ""
-        
-        # 验证quote是否是block_text的子串（允许部分匹配）
-        if quote:
-            # 去除空格和标点后匹配
-            quote_clean = re.sub(r"[\s，,。.；;：:]", "", quote)
-            block_text_clean = re.sub(r"[\s，,。.；;：:]", "", block_text)
-            
-            if quote_clean and quote_clean not in block_text_clean:
-                # quote不匹配，降级置信度或跳过
-                logger.warning(f"Quote mismatch for block {block_id}: '{quote[:50]}' not in block text")
-                continue
-        
-        validated_evidence.append({
-            "block_id": block_id,
-            "page_no": ev.get("page_no"),  # 不设置默认值，让insert_issue从evidence_block_ids反查
-            "quote": quote[:200] if quote else "",  # 限制quote长度
-        })
-        evidence_block_ids.append(block_id)
-    
-    if not validated_evidence:
-        return None  # 所有证据都无效，丢弃
-    
-    # 验证norm_refs
-    norm_refs = item.get("norm_refs") or []
-    validated_norm_refs = []
-    for nr in norm_refs:
-        kb_chunk_id = nr.get("kb_chunk_id")
-        if kb_chunk_id and kb_chunk_id in valid_chunk_ids:
-            validated_norm_refs.append({
-                "kb_chunk_id": kb_chunk_id,
-                "ref": nr.get("ref", ""),
-                "quote": nr.get("quote", "")[:200],
-            })
-    
-    # 构建验证后的issue
-    # page_no设为None，让insert_issue从evidence_block_ids反查
+    anchor_text = (loc.get("anchor_text") or "").strip() or (snippets[0] if snippets else "")
+    if anchor_text:
+        anchor_clean = re.sub(r"\s+", "", anchor_text)[:50]
+        for b in blocks:
+            t = (b.get("text") or "").strip()
+            if anchor_clean and re.sub(r"\s+", "", t)[:100].find(anchor_clean) >= 0:
+                evidence_block_ids.append(b["id"])
+                break
+        if not evidence_block_ids and blocks:
+            evidence_block_ids.append(blocks[0]["id"])
+
+    # review_type 来自规范库规则，用于按 形式/技术 统计（未来可按 review_type 枚举统计）
+    review_type = None
+    if rule and isinstance(rule, dict):
+        review_type = rule.get("review_type")
+
     return {
-        "issue_type": item.get("issue_type", "AI_COMPLIANCE_GAP"),
-        "severity": item.get("severity", "S2"),
-        "title": item.get("title", "AI审查发现问题")[:255],
-        "description": item.get("description", "")[:2000],
-        "suggestion": item.get("suggestion", "")[:2000],
-        "confidence": max(0.0, min(1.0, float(item.get("confidence", 0.5)))),
-        "page_no": None,  # 不设置默认值，让insert_issue从evidence_block_ids反查
-        "evidence_block_ids": evidence_block_ids[:10],  # 最多10个证据块
-        "evidence_quotes": validated_evidence,
-        "anchor_rects": None,  # 可以后续从block_page_anchor获取
+        "issue_type": issue_type,
+        "severity": severity,
+        "title": title,
+        "description": description,
+        "suggestion": suggestion,
+        "confidence": 0.75,
+        "page_no": page_no,
+        "evidence_block_ids": evidence_block_ids[:5],
+        "evidence_quotes": evidence_quotes,
+        "checkpoint_code": (rule_def.get("rule_id") or "AI_RULE")[:64],
+        "review_type": review_type,
     }
