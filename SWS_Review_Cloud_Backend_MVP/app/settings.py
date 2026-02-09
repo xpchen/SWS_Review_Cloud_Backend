@@ -24,6 +24,9 @@ class Settings(BaseSettings):
     MINIO_SECRET_KEY: str = "minioadmin"
     MINIO_BUCKET: str = "sws"
     MINIO_SECURE: bool = False
+    # 对外返回文件地址时使用的域名（如通过 Nginx 代理 MinIO 的域名），
+    # 设置后 get_signed_url 返回的 URL 会使用此域名，便于浏览器/前端访问
+    MINIO_PUBLIC_URL: str = ""  # 例如: https://filessws.shunxintech.net
 
     # JWT
     JWT_SECRET: str = "change-me-in-production"
