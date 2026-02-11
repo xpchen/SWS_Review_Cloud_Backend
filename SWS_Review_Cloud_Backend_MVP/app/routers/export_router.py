@@ -1,4 +1,5 @@
 from typing import Annotated
+from urllib.parse import quote
 
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from fastapi.responses import StreamingResponse
@@ -22,10 +23,13 @@ def _export_issues_xlsx_response(version_id: int, status: str | None, severity: 
 def _export_issues_docx_response(version_id: int, status: str | None, severity: str | None):
     """导出 Word 问题清单（审查错误统计表 + 按大纲分组的问题列表）。"""
     data = build_issues_docx(version_id, status=status, severity=severity)
+    # HTTP 头仅支持 ASCII，中文文件名用 RFC 5987 filename*=UTF-8''...
+    filename_utf8 = quote("问题清单.docx", safe="")
+    content_disp = f"attachment; filename=issues.docx; filename*=UTF-8''{filename_utf8}"
     return StreamingResponse(
         iter([data]),
         media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        headers={"Content-Disposition": 'attachment; filename="问题清单.docx"'},
+        headers={"Content-Disposition": content_disp},
     )
 
 
